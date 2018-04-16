@@ -6,7 +6,7 @@ import java.util.List;
 
 import cosinesimilarity.LuceneCosineSimilarity;
 import database.DBFunctions;
-import tagging.Tag;
+import model.Tag;
 import tagging.TaggingFactory;
 
 public class ChooseLDSDCosine implements Similarity {
@@ -25,7 +25,7 @@ public class ChooseLDSDCosine implements Similarity {
 	
 		for (int j = 0; j < filmesNotRating.size(); j++) {
 			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentLimitTag(filmesNotRating.get(j), 5);
+			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), 5);
 			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
 			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
@@ -36,7 +36,7 @@ public class ChooseLDSDCosine implements Similarity {
 				 	
 		 	ResultCalcule = (cosineSimilarity + calculeSemanticLDSD) / 2;
 					
-		 	TaggingFactory.saveResultSimilarityOfFimlUserAndFilmRecommended("LDSD+COSINE", cosineSimilarity, calculeSemanticLDSD, ResultCalcule, filmesNotRating.get(j), userId);
+		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+COSINE", cosineSimilarity, calculeSemanticLDSD, ResultCalcule, filmesNotRating.get(j), userId);
 		}
 	}
 }

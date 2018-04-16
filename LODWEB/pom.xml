@@ -9,106 +9,115 @@
 		<tomcat.deploy.dir>/home/fred/Desktop/TOMCAT/webapps</tomcat.deploy.dir>
 	</properties>
 	<dependencies>
-	
-	
-	
-<dependency>
-  <groupId>fm.last</groupId>
-  <artifactId>coverartarchive-api</artifactId>
-  <version>2.1.0</version>
-</dependency>	
-	
-<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
-<dependency>
-    <groupId>net.sourceforge.htmlunit</groupId>
-    <artifactId>htmlunit</artifactId>
-    <version>2.26</version>
-</dependency>
-
-<!-- <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-    <version>4.5.3</version>
-</dependency> -->
-
-<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-<dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.5</version>
-</dependency>
-
-	
-	
-<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-<dependency>
-    <groupId>org.jsoup</groupId>
-    <artifactId>jsoup</artifactId>
-    <version>1.10.2</version>
-</dependency>
-	
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server-linking -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-server-linking</artifactId>
-    <version>1.19.4</version>
-</dependency>
-	
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-client -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-client</artifactId>
-    <version>1.19.4</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-server</artifactId>
-    <version>1.19.4</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-core -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-core</artifactId>
-    <version>1.19.4</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-json -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-json</artifactId>
-    <version>1.19.4</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-servlet -->
-<dependency>
-    <groupId>com.sun.jersey</groupId>
-    <artifactId>jersey-servlet</artifactId>
-    <version>1.19.4</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-multipart -->
-<dependency>
-    <groupId>com.sun.jersey.contribs</groupId>
-    <artifactId>jersey-multipart</artifactId>
-    <version>1.19.4</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/de.sciss/ws4j -->
 
 
-<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>21.0</version>
-</dependency>
+		<dependency>
+			<groupId>fm.last</groupId>
+			<artifactId>coverartarchive-api</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.26</version>
+		</dependency>
+
+		<!-- Patrick -->
 
 
-	
-	
+		<!-- https://mvnrepository.com/artifact/de.sciss/ws4j -->
+		<dependency>
+			<groupId>de.sciss</groupId>
+			<artifactId>ws4j</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/de.sciss/jawjaw -->
+		<dependency>
+			<groupId>de.sciss</groupId>
+			<artifactId>jawjaw</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<!-- Fim -->
 
 
+
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<version>4.5.3</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.10.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server-linking -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server-linking</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-client -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-core -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-json -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-servlet -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-multipart -->
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>21.0</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
 		<dependency>
@@ -155,11 +164,7 @@
 			<artifactId>primefaces</artifactId>
 			<version>6.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.primefaces.themes</groupId>
-			<artifactId>cupertino</artifactId>
-			<version>1.0.10</version>
-		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable -->
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
@@ -207,12 +212,6 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-osgi</artifactId>
 			<version>3.1.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.mchange/mchange-commons-java -->
-		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>mchange-commons-java</artifactId>
-			<version>0.2.12</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
 		<dependency>
@@ -280,14 +279,19 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+
 	</dependencies>
+
 	<repositories>
 		<repository>
 			<id>primefaces-repository</id>
 			<name>Primefaces repository</name>
 			<url>http://repository.primefaces.org</url>
 		</repository>
+
+
 	</repositories>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>

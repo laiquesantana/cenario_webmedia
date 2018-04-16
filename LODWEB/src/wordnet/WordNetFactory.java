@@ -9,7 +9,7 @@ import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.RelatednessCalculator;
 import edu.cmu.lti.ws4j.impl.WuPalmer;
 import edu.cmu.lti.ws4j.util.WS4JConfiguration;
-import tagging.Tag;
+import model.Tag;
 import tagging.TaggingFactory;
 
 public class WordNetFactory {
@@ -69,36 +69,29 @@ public class WordNetFactory {
 	public static double calculeTagSemanticWUP(List<Tag> words1, List<Tag> words2) {
 		DBFunctions dbFunctions = new DBFunctions();
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
+		double distance;
 
-		double resultSemanticWUPDivUnion = 0;
+		double resultSemantic = 0;
+		int cont = 0;
 		
 		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
 
 		for (Tag word1 : words1) {
 			for (Tag word2 : words2) {
-
-				double distance = valueDistance(word1.getName(), word2.getName());
-				System.out.println("WUP: " + word1.getName() + " -  " + word2.getName() + " = " + distance);
+				
+				
+			//	if(mapResultLDSDweighted.size() >= cont) {
+			//		break;
+			//	}
 
 				try { Thread.sleep (200); } catch (InterruptedException ex) {}
 				
 				Tag tag1 = dbFunctions.findTag(word1.getName());
 				Tag tag2 = dbFunctions.findTag(word2.getName());
-		
-			//	if (dbFunctions.isTagSimResult(tag1, tag2, "WUP") != 0) {
-			//		System.out.println("VALOR PARA A CONDIÇÃO DO IF -> " + dbFunctions.isTagSimResult(tag1, tag2, "WUP"));
-			//		System.out.println("VALOR INSERIDO DO BANCO " + distance);
-			//		distance = dbFunctions.isTagSimResult(tag1, tag2, "WUP");
-			//	} else {
-			//		distance = valueDistance(tag1.getName(), tag2.getName());
-			//		System.out.println("DISTANCIA WUP -> " + distance);
-			//	}
+					
+				distance = valueDistance(tag1.getName(), tag2.getName());
 				
-				
-			
-					distance = valueDistance(tag1.getName(), tag2.getName());
-				
-			
+				System.out.println("WUP: " + word1.getName() + " -  " + word2.getName() + " = " + distance);
 
 				if (distance != 1.0 && distance != 0.0 && distance < 1 && tag1.getId() != tag2.getId() || dbFunctions.isTagSimResult(tag1, tag2, "WUP") != 0) {
 					mapResultLDSDweighted.put(tag1.getName() + tag2.getName(), (distance));
@@ -116,14 +109,20 @@ public class WordNetFactory {
 		System.out.println("\n ================================== RESULTADOS ====================================== ");
 		
 		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
-		resultSemanticWUPDivUnion = TaggingFactory.calculeSemantic(mapResultLDSDweighted);
+		resultSemantic = TaggingFactory.sumSemantic(mapResultLDSDweighted);
 			
-		System.out.println(" SOMA Similarity SEMÂNTICA -> " + TaggingFactory.calculeSemantic(mapResultLDSDweighted) + " | DIVISÃO PELO VALOR DA UNIÃO -> " + resultSemanticWUPDivUnion);
-		System.out.println(" RESULTADO DA SOMA DA WUP -> " + TaggingFactory.calculeSemantic(mapResultLDSDweighted));
+		System.out.println(" SOMA Similarity SEMÂNTICA -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted) + " | DIVISÃO PELO VALOR DA UNIÃO -> " + resultSemantic);
+		System.out.println(" RESULTADO DA SOMA DA WUP -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
 		System.out.println(" QUANTIDADE DE COMPARAÇÃO -> " + mapResultLDSDweighted.size());
-		System.out.println(" RESULTADO DA SOMA DIVIDIDA PELA QUANTIDADE DE COMPARAÇÃO -> " + TaggingFactory.calculeSemantic(mapResultLDSDweighted));
+		System.out.println(" RESULTADO DA SOMA DIVIDIDA PELA QUANTIDADE DE COMPARAÇÃO -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
 		
-		return resultSemanticWUPDivUnion / mapResultLDSDweighted.size();
+		if(resultSemantic > 1) {
+			 resultSemantic = 1;
+		}
+		
+
+				
+		return resultSemantic;
 	}
 
 	

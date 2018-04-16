@@ -23,12 +23,17 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
+
+import com.drew.metadata.photoshop.PsdHeaderDescriptor;
+
 import cosinesimilarity.LuceneCosineSimilarity;
 import model.HitRate;
 import model.OnlineEvaluation;
-import model.Rating;
+import model.Ratings;
+import model.Tag;
 import model.User;
 import node.Classifier;
 import node.Evaluation;
@@ -41,7 +46,6 @@ import node.NodeUtil;
 import node.SparqlWalk;
 import parser.Parser;
 import tagging.CBRecommender;
-import tagging.Tag;
 import util.StringUtilsNode;
 
 /**
@@ -460,10 +464,13 @@ public class DBFunctions {
 	public static void main(String[] args) {
 
 		DBFunctions dbFunctions = new DBFunctions();
-		dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
-		System.out.println();
+		//dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
+		//System.out.println();
+			
+		System.out.println(createTestSetByMax(2199,5,3));
+		System.out.println(createTestSetByMin(2199,5,4));
 		
-		createListCorrectItens(2199, 50);
+		
 
 		// DBFunctions.loadBrazilianTitles();
 
@@ -1467,7 +1474,6 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * FROM lod.user where `email` = " + email;
-			// NodeUtil.print(query);
 			PreparedStatement ps = conn.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 			while (rs != null && rs.next()) {
@@ -1574,7 +1580,7 @@ public class DBFunctions {
 
 		for (int i = 0; i < tagsFilmesAvaliados.size(); i++) {
 			nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i))));
-			System.out.println("getNameOfTagsOfFilmSSSSS -> " + DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i)));
+			System.out.println("NOMES DAS TAG -> " + DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i)));
 		}
 		return nameOfTagsFilmsHasRating;
 	}
@@ -1673,6 +1679,8 @@ public class DBFunctions {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
+		try { Thread.sleep (500); } catch (InterruptedException ex) {}
+		
 		try {
 			try {
 				String query = "INSERT INTO `tag_sim` ( `idtag1`, `idtag2`, `sim`, `tipo`) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE `idtag1` = `idtag1`, `idtag2` = `idtag2`";
@@ -1707,7 +1715,7 @@ public class DBFunctions {
 
 	}
 	
-	public void insertOrUpdateSemanticFilm(int idTag1, int idTag2, String sim, double score, int iduser) {
+	public void insertOrUpdateSemantic(int idTag1, int idTag2, String sim, double score, int iduser) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 	
@@ -1745,10 +1753,11 @@ public class DBFunctions {
 		}
 
 	}
-	
-	
+		
 	public Tag findTag(String name) {
 		Tag tag = null;
+		
+		try { Thread.sleep (500); } catch (InterruptedException ex) {}
 
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -1788,7 +1797,10 @@ public class DBFunctions {
 
 	public double isTagSimResult(Tag item1, Tag item2, String similarity) {
 
+		try { Thread.sleep (500); } catch (InterruptedException ex) {}
+		
 		try {
+			
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * from `lod`.`tag_sim` where `idtag1`= ? AND `idtag2`= ? AND `tipo` = ?";
 			PreparedStatement ps = conn.prepareStatement(query);
@@ -1806,6 +1818,8 @@ public class DBFunctions {
 			ex.printStackTrace();
 		}
 
+		try { Thread.sleep (500); } catch (InterruptedException ex) {}
+		
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * from `lod`.`tag_sim` where `idtag2`= ? AND `idtag1`= ?";
@@ -1891,8 +1905,10 @@ public class DBFunctions {
 	}
 	
 	
-	
-	public List<Integer> createRecommendation(int userid, String type) {
+	/*
+	 * Exibe o resultado da Recomendação e retorna uma lista com os filmes com similaridade
+	 */
+	public List<Integer> resultRecommendation(int userid, String type) {
 		List<Integer> rankedItems = new ArrayList<Integer>();
 		
 		try {
@@ -1931,90 +1947,76 @@ public class DBFunctions {
 		return rankedItems;
 	}
 	
-	public List<Integer> createMovieJaccard(String type) {
-		List<Integer> rankedItems = new ArrayList<Integer>();
-		
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * FROM semantic WHERE sim = ? AND score >= 4  ORDER BY score DESC "; 
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setString(1, type);
-			
-			ResultSet rs = ps.executeQuery();
-			int cont = 1;
-			
-		
-			while (rs != null && rs.next()) {
-				
-				System.out.println( "       " + cont +  
-									"           " + rs.getInt(5) + 
-									"         " + findNameOfFilm(rs.getInt(2)) + 
-									"                " + rs.getString(3) + 
-									"    " + rs.getDouble(4));
-				System.out.println(" ---------------------------------------------------------------------------");
-				
-				rankedItems.add(rs.getInt(2));
-				
-				cont = cont + 1;
-			}
-			
-			CBRecommender.end = System.currentTimeMillis();
-			
-			System.out.println( "   Tempo Total do Calculo:    " + 	String.valueOf(CBRecommender.end -	CBRecommender.init) ); 
-		
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return rankedItems;
-	}
-	
-	public static List<Rating> createListCorrectItens(int iduser, int limit)  {
-		 List<Rating> film = new ArrayList<Rating>();
-		 List<Rating> filmRadom = new ArrayList<Rating>();
-						
+	/*
+	 * Cria o DataSet de teste com os filme que o suário não assistiu passando os valores, usuário, tamanha, e o rating max
+	 */
+	public static List<Ratings> createTestSetByMax(int iduser, int limit, int max)  {
+
+		 List<Ratings> relevant = new ArrayList<Ratings>();
+		 int cont = 0;
+					
 			 try {
 					Connection conn = DBConnection.getConnection();
-					String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE iduser != ? GROUP BY iddocument"; 
+					String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE iduser != ? GROUP BY RAND(iddocument)"; 
 					PreparedStatement ps = conn.prepareStatement(query);
 					ps.setInt(1, iduser);
 					ResultSet rs = ps.executeQuery();
 												
 					while (rs != null && rs.next()) {
-						Rating rating= new Rating(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
-					
-							film.add(rating);
-					
+						Ratings rating= new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
+						if(rs.getDouble(4) <= max ) {
+							cont++;
+							System.out.println("DATASET FILME -> " + rs.getInt(3) + " RATING -> " + rs.getDouble(4));
+							relevant.add(rating);
+						}
+						
+						if(cont==limit) {
+							break;
+						}
 					}
 									
 					closeQuery(conn, ps);
 				} catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-			int cont = 0;
-			 // esse for vai ser enquanto nao acabar o array de filmes
-			 for(int i=0 ; i< limit; i++) {
-				 
-				 int index = new Random().nextInt(film.size());
-				 
-				 if(film.get(index).getRating() >= 4) {
-							
-				    	 filmRadom.add(film.get(index));
-						 System.out.println("NOME DO FILME -> " + findNameOfFilm(film.get(index).getIddocument()) + "Rating -> " + film.get(index).getRating());
-				
-				 }
-				 
-			 }
-			 
-			 
-			 
-			 
-		return filmRadom;
+		
+		return relevant;
 	}
 	
+	//createTestSetgetByAvgRating
+	public static List<Ratings> createTestSetByMin(int iduser, int limit, int min)  {
+
+		 List<Ratings> testSet = new ArrayList<Ratings>();
+		 int cont = 0;
+					
+			 try {
+					Connection conn = DBConnection.getConnection();
+					String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE iduser != ? GROUP BY RAND(iddocument)"; 
+					PreparedStatement ps = conn.prepareStatement(query);
+					//System.out.println(ps);
+					ps.setInt(1, iduser);
+					ResultSet rs = ps.executeQuery();
+												
+					while (rs != null && rs.next() && cont < limit) {
+						Ratings rating= new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
+						if(rs.getDouble(4) >= min ) {
+							cont++;
+							System.out.println("DATASET FILME -> " + rs.getInt(3) + " RATING -> " + rs.getDouble(4));
+							testSet.add(rating);
+						}
+					}
+									
+					closeQuery(conn, ps);
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+		
+		return testSet;
+	}	
 	
-	
-	
+	/*
+	 * Busca o nome do filme pelo ID
+	 */
 	public static String findNameOfFilm(int idDocument) {
 		String film = null;
 		
@@ -2114,7 +2116,7 @@ public class DBFunctions {
 
 	}
 
-	public List<Integer> findByUserRatingHigher(int idUser, int limit) {
+	public List<Integer> findByUserRating(int idUser, int limit) {
 
 		List<Integer> document = new ArrayList<Integer>();
 
@@ -2137,16 +2139,16 @@ public class DBFunctions {
 		return document;
 	}
 
-	public List<Integer> findTagOfDocuments(List<Integer> filmes, int idUser) {
+	public List<Integer> findTagOfDocuments(List<Integer> userModel, int idUser) {
 
 		List<Integer> tags = new ArrayList<Integer>();
 
-		for (int i = 0; i < filmes.size(); i++) {
+		for (int i = 0; i < userModel.size(); i++) {
 			try {
 				Connection conn = DBConnection.getConnection();
 				String query = "SELECT * FROM lod.tagging WHERE iddocument = ? AND iduser = ?";
 				PreparedStatement ps = conn.prepareStatement(query);
-				ps.setInt(1, filmes.get(i));
+				ps.setInt(1, userModel.get(i));
 				ps.setInt(2, idUser);
 				ResultSet rs = ps.executeQuery();
 
@@ -2154,7 +2156,7 @@ public class DBFunctions {
 
 					if (!isTagOfDocument(tags, rs.getInt(4))) {
 						System.out.println(
-								"DOCUMENT -> " + filmes.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
+								"DOCUMENT -> " + userModel.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
 						tags.add(rs.getInt(4));
 					}
 				}
@@ -2233,7 +2235,7 @@ public class DBFunctions {
 	}
 	
 	
-	public List<Integer> findTagOfDocumentLimitTag(int filme, int limit) {
+	public List<Integer> findTagOfDocumentWithLimitTag(int filme, int limit) {
 
 		List<Integer> tags = new ArrayList<Integer>();
 
@@ -2299,51 +2301,6 @@ public class DBFunctions {
 		return false;
 	}
 
-	public List<Integer> findDocumentUserNotHasRating(int idUser, int limit) {
-		List<Integer> document = new ArrayList<Integer>();
-
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * FROM lod.rating WHERE iduser != ? AND rating = 5 LIMIT ?";
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, idUser);
-			ps.setInt(2, limit);
-			ResultSet rs = ps.executeQuery();
-
-			while (rs != null && rs.next()) {
-				document.add(rs.getInt(3));
-				System.out.println("Filmes não avaliados-> " + rs.getString(3));
-			}
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return document;
-	}
-	
-	public List<Integer> findDocumentUserNotHasRatingBetweenID(int first, int last, int idUser) {
-		List<Integer> document = new ArrayList<Integer>();
-
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT iddocument FROM lod.rating where iddocument BETWEEN ? AND ? AND iduser != ? AND rating = 5";
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, first);
-			ps.setInt(2, last);
-			ps.setInt(3, idUser);
-			
-			ResultSet rs = ps.executeQuery();
-			int i =1;
-			while (rs != null && rs.next()) {
-				document.add(rs.getInt(1));
-				System.out.println("Nº " + i++ + " Filmes não avaliados-> " + rs.getString(1));
-			}
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return document;
-	}
 	/* RAKING */
 	public List<String> rankedItemsByUser(int idUser) {
 		

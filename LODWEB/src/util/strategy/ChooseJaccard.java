@@ -2,8 +2,8 @@ package util.strategy;
 
 import java.util.List;
 import database.DBFunctions;
+import model.Tag;
 import similarity.Jaccard;
-import tagging.Tag;
 import tagging.TaggingFactory;
 
 public class ChooseJaccard implements Similarity {
@@ -23,7 +23,7 @@ public class ChooseJaccard implements Similarity {
 
 			similarityJaccard = Jaccard.similarityJaccard(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
 			
-			TaggingFactory.saveResultSimilarityOfFimlUserAndFilmRecommended("JACCARD", similarityJaccard, 0, similarityJaccard, filmesNotRating.get(j), userId);	
+			TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("JACCARD", similarityJaccard, 0, similarityJaccard, filmesNotRating.get(j), userId);	
 
 		}
 	}

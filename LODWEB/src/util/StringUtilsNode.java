@@ -1267,6 +1267,8 @@ public class StringUtilsNode {
 		String s = nameTag2;
 		String sNova = "";
 		
+		try { Thread.sleep (100); } catch (InterruptedException ex) {}
+		
 		for (String sNome : s.toLowerCase().split(" ")) {
 		    if (!"".equals(sNome)) {
 		        if (!"".equals(sNova)) sNova += " ";
@@ -1280,7 +1282,6 @@ public class StringUtilsNode {
 	
 		return sNova.replace(" ", "_");
 	}
-
 
 	public static String removeWords(String a) {
 		

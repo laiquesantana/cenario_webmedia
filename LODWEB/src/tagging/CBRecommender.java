@@ -1,6 +1,8 @@
 package tagging;
 import java.util.List;
+import java.util.ArrayList;
 import database.DBFunctions;
+import model.Ratings;
 
 public class CBRecommender {
 	
@@ -12,10 +14,7 @@ public class CBRecommender {
 	
 	    // createScenario();
 	   
-	    //recommend(11);
 	     recommend(2299);
-	   
-
 	}
 
 	public static void createScenario() {
@@ -285,186 +284,38 @@ public class CBRecommender {
 		*/
 	}
 
+
 	public static void recommend(int userId) {
-			
-		System.out.println(" \n ************* Fimes não Avaliados ************* \n"); 
-		 //  List<Integer> filmesNotRating = dbFunctions.findDocumentUserNotHasRating(userId, 5);
-	     //	 List<Integer> filmesNotRating = dbFunctions.findDocumentUserNotHasRatingBetweenID(501, 506, userId);
-	    	List<model.Rating> filmesNotRating = DBFunctions.createListCorrectItens(userId, 200);
-		System.out.println(" \n *********************************************** \n"); 
 		
-//		TaggingFactory.createRecomedationSystemWithTopK(filmesNotRating, userId, 5, 5);
-		TaggingFactory.createRecomedationSystemWithTopK(filmesNotRating, userId, 15, 15);
-//		TaggingFactory.createRecomedationSystemWithTopK(filmesNotRating, userId, 15, 15);
+		int limitMax = 8;
+		int limitMin = 7;
+		List<Ratings> testSet = new ArrayList<Ratings>();
+		DBFunctions dbFunctions = new DBFunctions();
 
-		
-		
-		
-		
-	
-/*		// Cria a lista com ID dos Itens Correntos
-		List<Integer> idFilmRating = new ArrayList<Integer>();
-		List<Integer> idFilmRating10 = new ArrayList<Integer>();
-		List<Integer> idFilmRating15 = new ArrayList<Integer>();
-		
-		System.out.println(" \n ************* Fimes Avaliados ************* \n"); 
-		List<Integer> filmes = dbFunctions.findByUserRatingHigher(userId, 5);
-		System.out.println(" \n ******************************************* \n"); 
-		
-		int cont  = 0;
-		
-		System.out.println(" ********************** 5 FILMES SERÃO OS ITENS CORRETOS. ************************");
-		
-		for (model.Rating rating : filmesNotRating) {
-			cont = cont + 1;
-			
-		    if(cont <= 5 ) {
-		    	System.out.println("VALOR -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-		    	idFilmRating.add(rating.getIddocument());
-		    	idFilmRating10.add(rating.getIddocument());
-		    	idFilmRating15.add(rating.getIddocument());
+		System.out.println(" \n ************* List UserModel ************* \n");
+		List<Integer> userModel = dbFunctions.findByUserRating(userId, 5);
+		System.out.println(" \n ******************************************* \n");
 
-		    }
+		System.out.println(" \n ************* Filmes DataSet ************* \n");
+		List<Ratings> testSetIrrelevant = DBFunctions.createTestSetByMax(2199,limitMax,3);
+		List<Ratings> testSetRelevant = DBFunctions.createTestSetByMin(2199,limitMin,4);
+		
+		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetRelevant));
+		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetIrrelevant));
+
+		System.out.println(" \n *********************************************** \n");
+			
+		for(Ratings r: testSet) {
+			System.out.println(
+					" ID -> " + r.getIddocument() + 
+					" NOME DO FILME -> " + DBFunctions.findNameOfFilm(r.getIddocument()) + 
+					" RATING -> " + r.getRating()
+					);
 		}
 		
-		System.out.println(" -----------------------------------------------------------------------------------");
-				
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "LDSD+JACCARD");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "WUP+JACCARD");
-//		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "LDSD+COSINE");
-//		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "WUP+COSINE");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "COSINE");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "JACCARD");
-	
-		// LISTA DOS FILME INDICADO PELO (SR)
-		List<Integer> rankedItemsLDSDJaccard = dbFunctions.createRecommendation(userId, "LDSD+JACCARD");
-		List<Integer> rankedItemsWupJaccard = dbFunctions.createRecommendation(userId, "WUP+JACCARD");
-//		List<Integer> rankedItemsLDSDCosine = dbFunctions.createRecommendation(userId, "LDSD+COSINE");
-//		List<Integer> rankedItemsWupCosine = dbFunctions.createRecommendation(userId, "WUP+COSINE");
-	
-		dbFunctions.createRecommendation(userId, "COSINE");
-		dbFunctions.createRecommendation(userId, "JACCARD");
-		
-		System.out.println("-------------- PRECISION ----------------");
-		System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(rankedItemsWupJaccard,idFilmRating));
-		System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(rankedItemsLDSDJaccard,idFilmRating));
-//		System.out.println("VALOR DO PRECISION: WUP + COSINE -> " + PrecisionAndRecall.precision(rankedItemsWupCosine,idFilmRating));
-//		System.out.println("VALOR DO PRECISION: LDSD + COSINE -> " + PrecisionAndRecall.precision(rankedItemsLDSDCosine,idFilmRating));
-		
-		System.out.println("----------------- AP -----------------");
-		System.out.println("VALOR AP WUP + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsWupJaccard, idFilmRating, new ArrayList<Integer>()));
-		System.out.println("VALOR AP LDSD + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsLDSDJaccard, idFilmRating, new ArrayList<Integer>()));
-//		System.out.println("VALOR AP WUP + COSINE-> " + PrecisionAndRecall.AP(rankedItemsWupCosine, idFilmRating, new ArrayList<Integer>()));
-//		System.out.println("VALOR AP LDSD + COSINE-> " + PrecisionAndRecall.AP(rankedItemsLDSDCosine, idFilmRating, new ArrayList<Integer>()));
-		
-		// createRecommendation top 5, top 10, top 15 (calcular o precision de todos e o Map( AP de todos/ 3))
-	
-		for (model.Rating rating : filmesNotRating) {
-			System.out.println("ID FILME -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-		
-		}	
-		
-		
-		
-		
-		
-		
-		
-// ---------------------------------------------------------- 10 itens --------------------------------------------------------
-/*		
-		System.out.println(" \n ************* Fimes Avaliados ************* \n"); 
-		List<Integer> filmes10 = dbFunctions.findByUserRatingHigher(userId, 10);
-		System.out.println(" \n ******************************************* \n"); 
-		
-		// Cria a lista com ID dos Itens Correntos
-	
-		int cont10 = 0;
-		for (model.Rating rating : filmesNotRating) {
-			System.out.println("VALOR -> " + rating.getIddocument() + " | RATING -> " + rating.getRating());
-			
-			if(cont10 < 5 ) {
-		    	cont10 = cont10 + 1;
-		    	if (!idFilmRating10.contains(rating.getIddocument())) {
-		    	idFilmRating10.add(rating.getIddocument());
-		    	idFilmRating15.add(rating.getIddocument());
-		    	}
-		    }
-			
-		}
-				
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes10, idFilmRating10, userId, "LDSD");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes10, idFilmRating10, userId, "WUP");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes10, idFilmRating10, userId, "COSINE");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes10, idFilmRating10, userId, "JACCARD");
-	
-		// LISTA DOS FILME INDICADO PELO (SR)
-		List<Integer> rankedItemsWup10 = dbFunctions.createRecommendation(userId, "WUP");
-		List<Integer> rankedItemsLDSD10 = dbFunctions.createRecommendation(userId, "LDSD");
-	
-		dbFunctions.createRecommendation(userId, "COSINE");
-		dbFunctions.createRecommendation(userId, "JACCARD");
-		
-		System.out.println("-------------- PRECISION ----------------");
-		System.out.println("VALOR DO PRECISION WUP-> " + PrecisionAndRecall.precision(rankedItemsWup10,idFilmRating10));
-		System.out.println("VALOR DO PRECISION LDSD-> " + PrecisionAndRecall.precision(rankedItemsLDSD10,idFilmRating10));
-		System.out.println("----------------- AP -----------------");
-		System.out.println("VALOR AP WUP-> " + PrecisionAndRecall.AP(rankedItemsWup10, idFilmRating10, new ArrayList<Integer>()));
-		System.out.println("VALOR AP LDSD-> " + PrecisionAndRecall.AP(rankedItemsLDSD10, idFilmRating10, new ArrayList<Integer>()));
-		
-		// createRecommendation top 5, top 10, top 15 (calcular o precision de todos e o Map( AP de todos/ 3))
-	
-		for (model.Rating rating : filmesNotRating) {
-			System.out.println("ID FILME -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-		
-		}	
-		
-		
-	
-		
-		//---------------------------------------------------- top 15 filmes --------------------------------------------
+		System.out.println(" \n *********************************************** \n");
 
-		System.out.println(" \n ************* Fimes Avaliados ************* \n"); 
-		List<Integer> filmes15 = dbFunctions.findByUserRatingHigher(userId, 15);
-		System.out.println(" \n ******************************************* \n"); 
-		
-		// Cria a lista com ID dos Itens Correntos
-		int cont15 = 0;
-		for (model.Rating rating : filmesNotRating) {
-			System.out.println("VALOR -> " + rating.getIddocument() + " | RATING -> " + rating.getRating());
-			if (cont15 < 5) {
-				if (!idFilmRating15.contains(rating.getIddocument())) {
-					idFilmRating15.add(rating.getIddocument());
-				}
-				
-			}
-		}
-				
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes15, idFilmRating15, userId, "LDSD");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes15, idFilmRating15, userId, "WUP");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes15, idFilmRating15, userId, "COSINE");
-		TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes15, idFilmRating15, userId, "JACCARD");
-	
-		// LISTA DOS FILME INDICADO PELO (SR)
-		List<Integer> rankedItemsWup15 = dbFunctions.createRecommendation(userId, "WUP");
-		List<Integer> rankedItemsLDSD15 = dbFunctions.createRecommendation(userId, "LDSD");
-	
-		dbFunctions.createRecommendation(userId, "COSINE");
-		dbFunctions.createRecommendation(userId, "JACCARD");
-		
-		System.out.println(" \n \n -------------- PRECISION ----------------");
-		System.out.println("VALOR DO PRECISION WUP-> " + PrecisionAndRecall.precision(rankedItemsWup15,idFilmRating15));
-		System.out.println("VALOR DO PRECISION LDSD-> " + PrecisionAndRecall.precision(rankedItemsLDSD15,idFilmRating15));
-		System.out.println("\n ----------------- AP -----------------");
-		System.out.println("VALOR AP WUP-> " + PrecisionAndRecall.AP(rankedItemsWup15, idFilmRating15, new ArrayList<Integer>()));
-		System.out.println("VALOR AP LDSD-> " + PrecisionAndRecall.AP(rankedItemsLDSD15, idFilmRating15, new ArrayList<Integer>()));
-		
-		// createRecommendation top 5, top 10, top 15 (calcular o precision de todos e o Map( AP de todos/ 3))
-	
-		for (model.Rating rating : filmesNotRating) {
-			System.out.println("ID FILME -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-		
-		}	
-		
-	*/
+		TaggingFactory.createRecomedationSystem(userModel, testSet, userId);
+			
 	}
 }

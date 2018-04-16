@@ -27,6 +27,7 @@ import org.apache.jena.rdf.model.impl.ResourceImpl;
 import cosinesimilarity.LuceneCosineSimilarity;
 import model.HitRate;
 import model.OnlineEvaluation;
+import model.Tag;
 import model.User;
 import node.Classifier;
 import node.Evaluation;
@@ -39,7 +40,6 @@ import node.NodeUtil;
 import node.SparqlWalk;
 import parser.Parser;
 import tagging.CBRecommender;
-import tagging.Tag;
 import util.StringUtilsNode;
 
 /**

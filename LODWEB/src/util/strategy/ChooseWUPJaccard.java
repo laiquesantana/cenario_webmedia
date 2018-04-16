@@ -2,8 +2,8 @@ package util.strategy;
 
 import java.util.List;
 import database.DBFunctions;
+import model.Tag;
 import similarity.Jaccard;
-import tagging.Tag;
 import tagging.TaggingFactory;
 import wordnet.WordNetFactory;
 
@@ -24,7 +24,7 @@ public class ChooseWUPJaccard implements Similarity{
 	
 		for (int j = 0; j < filmesNotRating.size(); j++) {
 			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentLimitTag(filmesNotRating.get(j), 5);
+			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), 5);
 			List<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
 			calculeSemanticWup = WordNetFactory.calculeTagSemanticWUP(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
@@ -35,9 +35,9 @@ public class ChooseWUPJaccard implements Similarity{
 			 	
 			if(calculeSemanticWup != calculeSemanticWup) calculeSemanticWup = 0;
 			
-			ResultCalcule = TaggingFactory.calculeSumSimilarityAndJaccard(union, intersection, calculeSemanticWup);
+			ResultCalcule = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticWup);
 						
-			TaggingFactory.saveResultSimilarityOfFimlUserAndFilmRecommended("WUP+JACCARD", similarityJaccard, calculeSemanticWup, ResultCalcule, filmesNotRating.get(j), userId);							
+			TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("WUP+JACCARD", similarityJaccard, calculeSemanticWup, ResultCalcule, filmesNotRating.get(j), userId);							
 				
 		}
    }

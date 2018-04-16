@@ -1,52 +1,52 @@
 package model;
 
+import tagging.Document;
+import tagging.User;
+
 public class Rating {
 
-	private int id;
-	private int iduser;
-	private int iddocument;
-	private double rating;
+	int id;
+	Document document;
+	User user;
+	int rating;
 
-	public Rating(int id, int iduser, int iddocument, double rating) {
-		super();
-		this.id = id;
-		this.iduser = iduser;
-		this.iddocument = iddocument;
+	public Rating(Document document, User user, int rating) {
+		this.document = document;
+		this.user = user;
 		this.rating = rating;
-
+	}
+	
+	public Rating(Document document, User user) {
+		this.document = document;
+		this.user = user;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public Document getDocument() {
+		return document;
 	}
 
-	public int getIduser() {
-		return iduser;
+	public void setDocument(Document document) {
+		this.document = document;
 	}
 
-	public void setIduser(int iduser) {
-		this.iduser = iduser;
+	public User getUser() {
+		return user;
 	}
 
-	public int getIddocument() {
-		return iddocument;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public void setIddocument(int iddocument) {
-		this.iddocument = iddocument;
-	}
-
-	public double getRating() {
+	public int getRating() {
 		return rating;
 	}
 
-	public void setRating(double rating) {
+	public void setRating(int rating) {
 		this.rating = rating;
 	}
-	
-	
+
 }

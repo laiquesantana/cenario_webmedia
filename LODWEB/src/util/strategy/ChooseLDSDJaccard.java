@@ -4,10 +4,9 @@ package util.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import database.DBFunctions;
+import model.Tag;
 import similarity.Jaccard;
-import tagging.Tag;
 import tagging.TaggingFactory;
 
 public class ChooseLDSDJaccard implements Similarity {
@@ -18,32 +17,29 @@ public class ChooseLDSDJaccard implements Similarity {
  	double ResultCalcule;
 
 	@Override 
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId) {
+	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
 		DBFunctions dbFunctions = new DBFunctions();
-			
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, userId, 5);
-		ArrayList<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados); 
 	
-		for (int j = 0; j < filmesNotRating.size(); j++) {
-			
-			try { Thread.sleep (400); } catch (InterruptedException ex) {}
-			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentLimitTag(filmesNotRating.get(j), 5);
-			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
+		List<Integer> tagsUserModel = dbFunctions.findTagOfDocumentsLimitTag(userModel, userId, 5);
+		ArrayList<Tag> nameOfTagsUserModel = dbFunctions.getNameOfTagsOfFilms(tagsUserModel); 
+	
+		for (int j = 0; j < testSet.size(); j++) {
+	
+			List<Integer> tagsTestSet = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), 5);
+			ArrayList<Tag> nameOfTagsTestSet = dbFunctions.getNameOfTagsOfFilms(tagsTestSet);
 
-			similarityJaccard = Jaccard.similarityJaccard(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
+			union = Jaccard.union(nameOfTagsUserModel, nameOfTagsTestSet);
 			
-			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
+			intersection = Jaccard.intersection(nameOfTagsUserModel, nameOfTagsTestSet);
 			
+			similarityJaccard = Jaccard.similarityJaccard(nameOfTagsUserModel, nameOfTagsTestSet);
 			
-			union = Jaccard.union(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
-		 	intersection = Jaccard.intersection(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
-		 	
-		 	if(calculeSemanticLDSD != calculeSemanticLDSD) calculeSemanticLDSD = 0;
-		 	
-		 	ResultCalcule = TaggingFactory.calculeSumSimilarityAndJaccard(union, intersection, calculeSemanticLDSD);
+			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsUserModel, nameOfTagsTestSet);
 					
-		 	TaggingFactory.saveResultSimilarityOfFimlUserAndFilmRecommended("LDSD+JACCARD", similarityJaccard, calculeSemanticLDSD, ResultCalcule, filmesNotRating.get(j), userId);
+			ResultCalcule = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticLDSD);
+					
+		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+JACCARD", similarityJaccard, calculeSemanticLDSD, ResultCalcule, testSet.get(j), userId);
 		}
 	}
+
 }

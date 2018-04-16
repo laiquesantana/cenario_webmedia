@@ -1,11 +1,15 @@
 package tagging;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import database.DBFunctions;
 import metric.PrecisionAndRecall;
+import model.Ratings;
+import model.Tag;
 import similarity.LDSD;
 import util.StringUtilsNode;
 import util.strategy.ChooseCosine;
@@ -16,7 +20,10 @@ import util.strategy.ChooseWUPJaccard;
 import util.strategy.Similarity;
 
 public class TaggingFactory {
-	
+
+	/*
+	 * Faz a comparação para verificar se as Tags são equals
+	 */
 	public static List<Tag> compareTag(List<Tag> listTag1, List<Tag> listTag2) {
 		ArrayList<Tag> listResult = new ArrayList<Tag>();
 
@@ -34,6 +41,10 @@ public class TaggingFactory {
 		return listResult;
 	}
 
+	
+	/*
+	 *  Cria uma lista de Tags de um array de string
+	 */
 	public static List<Tag> loadTagArray(String[] tagArray) {
 		List<Tag> listTag = new ArrayList<Tag>();
 		DBFunctions dbFunctions = new DBFunctions();
@@ -47,6 +58,9 @@ public class TaggingFactory {
 		return listTag;
 	}
 	
+	/*
+	 * concatena Tags de filmes
+	 */
 	public static String loadNameTagArray(List<Integer> filmes) {
 		String text = null;
 		
@@ -62,6 +76,9 @@ public class TaggingFactory {
 		return text.split(" ");
 	}
 
+	/*
+	 * Concatena Tags da lista de Tags
+	 */
 	public static String concatenaTagText(List<Tag> listTag) {
 		String valueTag = "";
 		for (Tag tag : listTag) {
@@ -73,6 +90,9 @@ public class TaggingFactory {
 		return valueTag;
 	}
 	
+	/*
+	 * Cria um array de string de uma lista de Tags
+	 */
 	public static String[] convertTypeTagByArray(List<Tag> nameOfTagsFilms) {
 		String [] tags = new String[nameOfTagsFilms.size()];
 		int cont = 0;
@@ -86,28 +106,27 @@ public class TaggingFactory {
 		return tags;
 	}
 	
+	/*
+	 * Contador para retornar o tamanha da lista de tags
+	 */
 	public static int countAllItem(List<Tag> list) {
 
-		int cont = 0;
-		for (Tag tag : list) {
-				cont++;
-		}
-
-		return cont;
+		return list.size();
 	}
 
+	/*
+	 * Calcula a similaridade semântica entre as Tag e retorna o valor
+	 */
 	public static double calculeTagSemanticLDSD(List<Tag> listTag1, List<Tag> listTag2) {
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		double ldsdWeighted = 0;
-		double resultLDSDweighted = 0;
+		int cont = 0;
 		double resultSumSemantic = 0;
 		DBFunctions dbFunctions = new DBFunctions();
-
+		
 		for (Tag item1 : listTag1) {
 			for (Tag item2 : listTag2) {
-				
-				try { Thread.sleep (300); } catch (InterruptedException ex) {}
-				
+				cont = cont++;
 				
 				Tag tag1 = dbFunctions.findTag(item1.getName());
 				Tag tag2 = dbFunctions.findTag(item2.getName());
@@ -115,35 +134,42 @@ public class TaggingFactory {
 				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag1.getName());
 				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag2.getName());
 				
-				if (dbFunctions.isTagSimResult(tag1, tag2, "LDSD") !=0) {
-					System.out.println("VALOR PARA A CONDIÇÃO DO IF -> " + dbFunctions.isTagSimResult(tag1, tag2, "LDSD"));
-					System.out.println("VALOR INSERIDO DO BANCO " + resultLDSDweighted);
-					resultLDSDweighted = dbFunctions.isTagSimResult(tag1, tag2, "LDSD");
+				double isTagSimResult = dbFunctions.isTagSimResult(tag1, tag2, "LDSD");
+				
+				if (isTagSimResult !=0) {
+					System.out.println("VALOR PARA A CONDIÇÃO DO IF -> " + isTagSimResult);
+					System.out.println("VALOR INSERIDO DO BANCO " + isTagSimResult);
+						
 				} else {
 											
 					System.out.println("TAG 1 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag1);
 					System.out.println("TAG 2 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag2);
-								
-					
+							
 					try {
-						ldsdWeighted = LDSD.LDSDweighted("http://dbpedia.org/resource/" + nameTag1, "http://dbpedia.org/resource/" + nameTag2); }
-						catch (Exception ex) {
-							System.out.println(" Errro!!!");
-						}
+						
+					} catch(Exception e) {
+						System.out.println("");
 					}
-	
-				System.out.println("LDSD:  " + nameTag1 + " -  " + nameTag2 + " = " + resultLDSDweighted);
+					ldsdWeighted = LDSD.LDSDweighted("http://dbpedia.org/resource/" + nameTag1, "http://dbpedia.org/resource/" + nameTag2); }
+				
+					System.out.println("LDSD:  " + nameTag1 + " -  " + nameTag2 + " = " + isTagSimResult);
 
-				if (resultLDSDweighted != 1.0 && resultLDSDweighted != 0.0 || dbFunctions.isTagSimResult(tag1, tag2, "LDSD") !=0) {
+				if (isTagSimResult >= 1.0 && isTagSimResult != 0.0 || isTagSimResult !=0) {
 					System.out.println("-------------------------------------------");
-					System.out.println("VALOR DA SIMILARIDADE -> " + resultLDSDweighted);
+					System.out.println("VALOR DA SIMILARIDADE -> " + isTagSimResult);
 					System.out.println("TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 );
 					System.out.println("-------------------------------------------");			
 					
-					mapResultLDSDweighted.put(nameTag1 + nameTag2, resultLDSDweighted);
-					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), resultLDSDweighted, "LDSD");
+					mapResultLDSDweighted.put(nameTag1 + nameTag2, isTagSimResult);
+					
+					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), isTagSimResult, "LDSD");
 				}
 			}
+	
+		//	if(mapResultLDSDweighted.size() >= cont) {
+		//		break;
+		//	}
+		
 		}
 
 		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
@@ -151,50 +177,58 @@ public class TaggingFactory {
 		System.out.println("\n ================================== RESULTADOS ====================================== ");
 		
 		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
-		resultSumSemantic = calculeSemantic(mapResultLDSDweighted);
+		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
 		
 		if(resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
+		if(resultSumSemantic >= 1.0000000) resultSumSemantic = 1.0000000;
 		
-		return resultSumSemantic / mapResultLDSDweighted.size();
+		return resultSumSemantic;
 	}
 	
-	public static void calculeSimilarityBetweenFilmUserAndFilmNotRating(List<Integer> filmes, List<Integer> filmesNotRating, int userId, String type) {
+	
+	/*
+	 * Escolhe qual calculo de similaridade irá calcular
+	 */
+	public static void calculeSimilarityBetweenUserModelAndTestSet(List<Integer> userModel, List<Integer> testSet, int userId, String type) {
 		Similarity similarity;
 		
-		for (int j = 0; j < filmesNotRating.size(); j++) {
+		for (int j = 0; j < testSet.size(); j++) {
 
 			switch (type) {
 			case "LDSD+JACCARD":
 				similarity = new ChooseLDSDJaccard();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			case "LDSD+COSINE":
 				similarity = new ChooseLDSDCosine();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			case "WUP+JACCARD":
 				similarity = new ChooseWUPJaccard();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			case "WUP+COSINE":
 				similarity = new ChooseLDSDCosine();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			case "JACCARD":
 				similarity = new ChooseJaccard();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			case "COSINE":
 				similarity = new ChooseCosine();
-				similarity.choiceOfSimilarity(filmes, filmesNotRating, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId);
 				break;
 			default:
 				throw new RuntimeException("Strategy not found.");
 			}
 		}
 	}
-
-	public static double calculeSemantic(Map<String, Double> mapResultLDSDweighted) {
+	
+    /*
+     * Soma todos resultados similaridades semnaticas encontrada entre duas Tag
+     */
+	public static double sumSemantic(Map<String, Double> mapResultLDSDweighted) {
 		double total = 0;
 
 		for (Object key : mapResultLDSDweighted.keySet()) {
@@ -204,6 +238,10 @@ public class TaggingFactory {
 		return total;
 	}
 	
+	
+	/*
+	 * Remove tags iguais do mapa
+	 */
 	public static void removeEqual(Map<String, Double> map, Tag item1, Tag item2) {
 
 		for (Object key : map.keySet()) {
@@ -213,36 +251,45 @@ public class TaggingFactory {
 		}
 	}
 	
-	public static double calculeSumSimilarityAndJaccard(double  union, double  intersection, Double similarity) {
-		double aDouble = 0;
-		double sumSimilarityAndIntersertion = 0;
-		double divSumSimilarityAndIntersertionByUnion = 0;
-		String convertido = String.valueOf(similarity);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static List<Ratings> orderTestSetByRating(List<Ratings> testSet) {
 		
-		if(convertido.equals("0.0")) {
-			aDouble = 0.0000000;
-
-		} else {
-			
-			System.out.println("VARIAVEL -> " + aDouble);
-			
-			aDouble = Double.parseDouble(convertido.substring(0, 8));
-			sumSimilarityAndIntersertion = aDouble + intersection;
-			divSumSimilarityAndIntersertionByUnion = sumSimilarityAndIntersertion / union;
-				
-			System.out.println(" ************ DENTRO DO MÉTODO ************");
-			System.out.println("VALOR DA UNIÃO -> " + union);
-			System.out.println("VALOR DA INTERSEÇÃO -> " + intersection);
-			System.out.println("VALOR DA SOMA DA SIMILARIDADE -> " + similarity);
-			System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO -> " + sumSimilarityAndIntersertion);
-			System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO DIVIDIDO PELA UNIÃO-> " + divSumSimilarityAndIntersertionByUnion);
-					
-		}
+		Collections.sort(testSet, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Ratings p1 = (Ratings) o1;
+                Ratings p2 = (Ratings) o2;
+                return p1.getRating() > p2.getRating() ? -1 : (p1.getRating() > p2.getRating() ? +1 : 0);
+            }
+        });
 		
-		return divSumSimilarityAndIntersertionByUnion;
+		return testSet;
+		
 	}
 	
-	public static void saveResultSimilarityOfFimlUserAndFilmRecommended(String type, double similarityLexical, double similaritySemantic, double calculeSimilaritySemantic, int filmesNotRating, int userId) {
+	/*
+	 * Faz o calculo proposto para melhorar a precição da recomendação
+	 */
+	public static double calculeSimilarityAndJaccard(double  union, double  intersection, double similarity) {
+
+		double sumSimilarityAndIntersertion = 0;
+		double resultCalcule = 0;
+									
+				resultCalcule = (similarity + intersection) / union;		
+					
+				System.out.println(" ************ DENTRO DO MÉTODO ************");
+				System.out.println("VALOR DA UNIÃO -> " + union);
+				System.out.println("VALOR DA INTERSEÇÃO -> " + intersection);
+				System.out.println("VALOR DA SOMA DA SIMILARIDADE -> " + similarity);
+				System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO -> " + sumSimilarityAndIntersertion);
+				System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO DIVIDIDO PELA UNIÃO-> " + resultCalcule);
+		
+			return resultCalcule;
+	}
+	
+	/*
+	 * Salva o resultado do calculo da similaridade entre UserModel e TestSet
+	 */
+	public static void saveResultSimilarityOfUserModelWithTestSet(String type, double similarityLexical, double similaritySemantic, double calculeSimilaritySemantic, int testSet, int userId) {
 		DBFunctions dbFunctions = new DBFunctions();
 
 		System.out.println(" \n ***************************** CALCULO DA SIMILARIDADE " + type + " ************************* \n");
@@ -255,86 +302,56 @@ public class TaggingFactory {
 		System.out.println("======================================================================================== \n");
 
 		if ((calculeSimilaritySemantic) != 0 || (calculeSimilaritySemantic) <= 1) {
-			if (dbFunctions.isFilmsExistSemantic(1, filmesNotRating, userId, type) == false) {
-				dbFunctions.insertOrUpdateSemanticFilm(1, filmesNotRating, type, calculeSimilaritySemantic, userId);
+			if (dbFunctions.isFilmsExistSemantic(1, testSet, userId, type) == false) {
+				dbFunctions.insertOrUpdateSemantic(1, testSet, type, calculeSimilaritySemantic, userId);
 			}
 		}
 	}
 	
-	
-		
-	
-	
-	public static void createRecomedationSystemWithTopK(List<model.Rating> filmesNotRating, int userId, int itens, int topK) {
+	/*
+	 * Calcula a similaridade e salva no banco de dados e devolve uma recomendações de filmes
+	 */
+	public static void createRecomedationSystem(List<Integer> userModel, List<model.Ratings> testSet, int userId) {
 		
 		DBFunctions dbFunctions = new DBFunctions();
 		
-		// Cria a lista com ID dos Itens Correntos
-				List<Integer> idFilmRating = new ArrayList<Integer>();
+				// Cria a lista com ID dos Itens Correntos
+				List<Integer> filmRatingList = new ArrayList<Integer>();
+												
+				for (model.Ratings rating : testSet) filmRatingList.add(rating.getIddocument());
 								
-				System.out.println(" \n ************* Fimes Avaliados ************* \n"); 
-				List<Integer> filmes = dbFunctions.findByUserRatingHigher(userId, itens);
-				System.out.println(" \n ******************************************* \n"); 
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "LDSD+JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "WUP+JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "COSINE");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "JACCARD");
 				
-				int cont  = 0;
+				/* 
+				 * Exibe e retorna a lista com as simiaridades encontrada
+				 */
 				
-				System.out.println(" ********************** " + topK + " FILMES SERÃO OS ITENS CORRETOS. ************************");
-				
-				for (model.Rating rating : filmesNotRating) {
-					cont = cont + 1;
-					
-				    if(cont <= topK ) {
-				    	System.out.println("VALOR -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-				    	idFilmRating.add(rating.getIddocument());
-				    }
-				}
-				
-				System.out.println(" -----------------------------------------------------------------------------------");
-						
-				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "LDSD+JACCARD");
-				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "WUP+JACCARD");
-//				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "LDSD+COSINE");
-//				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "WUP+COSINE");
-				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "COSINE");
-				TaggingFactory.calculeSimilarityBetweenFilmUserAndFilmNotRating(filmes, idFilmRating, userId, "JACCARD");
-			
-				// LISTA DOS FILME INDICADO PELO (SR)
-				List<Integer> rankedItemsLDSDJaccard = dbFunctions.createRecommendation(userId, "LDSD+JACCARD");
-				List<Integer> rankedItemsWupJaccard = dbFunctions.createRecommendation(userId, "WUP+JACCARD");
-//				List<Integer> rankedItemsLDSDCosine = dbFunctions.createRecommendation(userId, "LDSD+COSINE");
-//				List<Integer> rankedItemsWupCosine = dbFunctions.createRecommendation(userId, "WUP+COSINE");
-			
-				dbFunctions.createRecommendation(userId, "COSINE");
-				dbFunctions.createRecommendation(userId, "JACCARD");
-				
+				List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
+				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
+				List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+								
 				System.out.println("-------------- PRECISION ----------------");
-				System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(rankedItemsWupJaccard,idFilmRating));
-				System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(rankedItemsLDSDJaccard,idFilmRating));
-//				System.out.println("VALOR DO PRECISION: WUP + COSINE -> " + PrecisionAndRecall.precision(rankedItemsWupCosine,idFilmRating));
-//				System.out.println("VALOR DO PRECISION: LDSD + COSINE -> " + PrecisionAndRecall.precision(rankedItemsLDSDCosine,idFilmRating));
+				System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
+				System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
+				System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
+				System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
+				
 				
 				System.out.println("----------------- AP -----------------");
-				System.out.println("VALOR AP WUP + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsWupJaccard, idFilmRating, new ArrayList<Integer>()));
-				System.out.println("VALOR AP LDSD + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsLDSDJaccard, idFilmRating, new ArrayList<Integer>()));
+				//System.out.println("VALOR AP LDSD + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsLDSDJaccard, idFilmRating, new ArrayList<Integer>()));
+//				System.out.println("VALOR AP WUP + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsWupJaccard, idFilmRating, new ArrayList<Integer>()));
 //				System.out.println("VALOR AP WUP + COSINE-> " + PrecisionAndRecall.AP(rankedItemsWupCosine, idFilmRating, new ArrayList<Integer>()));
 //				System.out.println("VALOR AP LDSD + COSINE-> " + PrecisionAndRecall.AP(rankedItemsLDSDCosine, idFilmRating, new ArrayList<Integer>()));
 				
 				// createRecommendation top 5, top 10, top 15 (calcular o precision de todos e o Map( AP de todos/ 3))
 			
-				for (model.Rating rating : filmesNotRating) {
-					cont = cont + 1;
-					
-				    if(cont <= topK ) {
-				    	System.out.println("FILMES SELECIONADOS TOP-K -> " + DBFunctions.findNameOfFilm(rating.getIddocument()) + " | RATING -> " + rating.getRating());
-				    }
-				}	
-				
+			
 	}
 	
-	
-	
-	
-	
-	
+
 }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import cosinesimilarity.LuceneCosineSimilarity;
 import database.DBFunctions;
-import tagging.Tag;
+import model.Tag;
 import tagging.TaggingFactory;
 
 
@@ -26,7 +26,7 @@ public class ChooseCosine implements Similarity {
 
 			cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.concatenaTagText(nameOfTagsFilmsHasRating), TaggingFactory.concatenaTagText(nameOfTagsFilmsNotRating));
 			
-			TaggingFactory.saveResultSimilarityOfFimlUserAndFilmRecommended("COSINE", cosineSimilarity, 0, cosineSimilarity, filmesNotRating.get(j), userId);		
+			TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("COSINE", cosineSimilarity, 0, cosineSimilarity, filmesNotRating.get(j), userId);		
 		}
 	}
 }
