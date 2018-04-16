@@ -284,7 +284,6 @@ public class CBRecommender {
 		*/
 	}
 
-
 	public static void recommend(int userId) {
 		
 		int limitMax = 8;
@@ -302,18 +301,6 @@ public class CBRecommender {
 		
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetRelevant));
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetIrrelevant));
-
-		System.out.println(" \n *********************************************** \n");
-			
-		for(Ratings r: testSet) {
-			System.out.println(
-					" ID -> " + r.getIddocument() + 
-					" NOME DO FILME -> " + DBFunctions.getNameDocument(r.getIddocument()) + 
-					" RATING -> " + r.getRating()
-					);
-		}
-		
-		System.out.println(" \n *********************************************** \n");
 
 		TaggingFactory.createRecomedationSystem(userModel, testSet, userId);
 			

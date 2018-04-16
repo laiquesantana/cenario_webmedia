@@ -329,7 +329,6 @@ public class TaggingFactory {
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
-				
 				List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
 				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
 				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
@@ -337,6 +336,7 @@ public class TaggingFactory {
 								
 				System.out.println("-------------- PRECISION ----------------");
 				System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
+				dbFunctions.insertOrUpdatePrecision(jaccardAndLDSDRankedList, filmRatingList, PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));

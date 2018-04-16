@@ -467,11 +467,10 @@ public class DBFunctions {
 		//dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
 		//System.out.println();
 			
-		System.out.println(createTestSetByMax(2199,5,3));
-		System.out.println(createTestSetByMin(2199,5,4));
+		//System.out.println(createTestSetByMax(2199,5,3));
+		//System.out.println(createTestSetByMin(2199,5,4));
 		
 		
-
 		// DBFunctions.loadBrazilianTitles();
 
 		/*
@@ -1575,15 +1574,16 @@ public class DBFunctions {
 
 	}
 
-	public void insertOrUpdatePrecision(String tag) {
+	public static void insertOrUpdatePrecision(List<Integer> film1, List<Integer> filmRatingList, double precision) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
-
 		try {
 			try {
-				String query = "";
+				String query = "REPLACE INTO `lod`.`precision` (`film1`, `film2`, `precision`) VALUES (?,?,?)";
 				ps = conn.prepareStatement(query);
-				ps.setString(1, tag);
+				//ps.setInt(1, film1);
+				//ps.setInt(2, film2);
+				ps.setDouble(3, precision);
 				ps.execute();
 				ps.close();
 				conn.close();
