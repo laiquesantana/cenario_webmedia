@@ -1575,6 +1575,43 @@ public class DBFunctions {
 
 	}
 
+	public void insertOrUpdatePrecision(String tag) {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			try {
+				String query = "";
+				ps = conn.prepareStatement(query);
+				ps.setString(1, tag);
+				ps.execute();
+				ps.close();
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	
+	
 	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
@@ -1926,7 +1963,7 @@ public class DBFunctions {
 				
 				System.out.println( "       " + cont +  
 									"           " + rs.getInt(5) + 
-									"         " + findNameOfFilm(rs.getInt(2)) + 
+									"         " + getNameDocument(rs.getInt(2)) + 
 									"                " + rs.getString(3) + 
 									"    " + rs.getDouble(4));
 				System.out.println(" ---------------------------------------------------------------------------");
@@ -2017,7 +2054,7 @@ public class DBFunctions {
 	/*
 	 * Busca o nome do filme pelo ID
 	 */
-	public static String findNameOfFilm(int idDocument) {
+	public static String getNameDocument(int idDocument) {
 		String film = null;
 		
 		try {
@@ -2315,8 +2352,8 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				document.add(findNameOfFilm(rs.getInt(1)));
-				System.out.println("FILMES RAKING-> " + findNameOfFilm(rs.getInt(1)));
+				document.add(getNameDocument(rs.getInt(1)));
+				System.out.println("FILMES RAKING-> " + getNameDocument(rs.getInt(1)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2345,8 +2382,8 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				document.add(findNameOfFilm(rs.getInt(2)));
-				System.out.println("FILMES QUE O USUARIO ESCOLHEU ->" + findNameOfFilm(rs.getInt(3)));
+				document.add(getNameDocument(rs.getInt(2)));
+				System.out.println("FILMES QUE O USUARIO ESCOLHEU ->" + getNameDocument(rs.getInt(3)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {

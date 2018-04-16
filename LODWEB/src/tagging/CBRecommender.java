@@ -308,7 +308,7 @@ public class CBRecommender {
 		for(Ratings r: testSet) {
 			System.out.println(
 					" ID -> " + r.getIddocument() + 
-					" NOME DO FILME -> " + DBFunctions.findNameOfFilm(r.getIddocument()) + 
+					" NOME DO FILME -> " + DBFunctions.getNameDocument(r.getIddocument()) + 
 					" RATING -> " + r.getRating()
 					);
 		}
