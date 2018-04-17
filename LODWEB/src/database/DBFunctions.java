@@ -467,10 +467,11 @@ public class DBFunctions {
 		//dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
 		//System.out.println();
 			
-		//System.out.println(createTestSetByMax(2199,5,3));
-		//System.out.println(createTestSetByMin(2199,5,4));
+		System.out.println(createTestSetByMax(2199,5,3));
+		System.out.println(createTestSetByMin(2199,5,4));
 		
 		
+
 		// DBFunctions.loadBrazilianTitles();
 
 		/*
@@ -1574,44 +1575,6 @@ public class DBFunctions {
 
 	}
 
-	public static void insertOrUpdatePrecision(List<Integer> film1, List<Integer> filmRatingList, double precision) {
-		Connection conn = DBConnection.getConnection();
-		PreparedStatement ps = null;
-		try {
-			try {
-				String query = "REPLACE INTO `lod`.`precision` (`film1`, `film2`, `precision`) VALUES (?,?,?)";
-				ps = conn.prepareStatement(query);
-				//ps.setInt(1, film1);
-				//ps.setInt(2, film2);
-				ps.setDouble(3, precision);
-				ps.execute();
-				ps.close();
-				conn.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
-
-	
-	
 	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
@@ -1963,7 +1926,7 @@ public class DBFunctions {
 				
 				System.out.println( "       " + cont +  
 									"           " + rs.getInt(5) + 
-									"         " + getNameDocument(rs.getInt(2)) + 
+									"         " + findNameOfFilm(rs.getInt(2)) + 
 									"                " + rs.getString(3) + 
 									"    " + rs.getDouble(4));
 				System.out.println(" ---------------------------------------------------------------------------");
@@ -2054,7 +2017,7 @@ public class DBFunctions {
 	/*
 	 * Busca o nome do filme pelo ID
 	 */
-	public static String getNameDocument(int idDocument) {
+	public static String findNameOfFilm(int idDocument) {
 		String film = null;
 		
 		try {
@@ -2352,8 +2315,8 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				document.add(getNameDocument(rs.getInt(1)));
-				System.out.println("FILMES RAKING-> " + getNameDocument(rs.getInt(1)));
+				document.add(findNameOfFilm(rs.getInt(1)));
+				System.out.println("FILMES RAKING-> " + findNameOfFilm(rs.getInt(1)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2382,8 +2345,8 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				document.add(getNameDocument(rs.getInt(2)));
-				System.out.println("FILMES QUE O USUARIO ESCOLHEU ->" + getNameDocument(rs.getInt(3)));
+				document.add(findNameOfFilm(rs.getInt(2)));
+				System.out.println("FILMES QUE O USUARIO ESCOLHEU ->" + findNameOfFilm(rs.getInt(3)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {

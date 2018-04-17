@@ -14,7 +14,11 @@ public class CBRecommender {
 	
 	    // createScenario();
 	   
-	     recommend(2299);
+	 //    recommend(2299);
+	 //    recommend(342);
+	     recommend(2931);
+	//     recommend(1629);
+	//     recommend(1678);
 	}
 
 	public static void createScenario() {
@@ -284,10 +288,11 @@ public class CBRecommender {
 		*/
 	}
 
+
 	public static void recommend(int userId) {
 		
-		int limitMax = 8;
-		int limitMin = 7;
+		int limitMax = 2;
+		int limitMin = 1;
 		List<Ratings> testSet = new ArrayList<Ratings>();
 		DBFunctions dbFunctions = new DBFunctions();
 
@@ -301,6 +306,18 @@ public class CBRecommender {
 		
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetRelevant));
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetIrrelevant));
+
+		System.out.println(" \n *********************************************** \n");
+			
+		for(Ratings r: testSet) {
+			System.out.println(
+					" ID -> " + r.getIddocument() + 
+					" NOME DO FILME -> " + DBFunctions.findNameOfFilm(r.getIddocument()) + 
+					" RATING -> " + r.getRating()
+					);
+		}
+		
+		System.out.println(" \n *********************************************** \n");
 
 		TaggingFactory.createRecomedationSystem(userModel, testSet, userId);
 			

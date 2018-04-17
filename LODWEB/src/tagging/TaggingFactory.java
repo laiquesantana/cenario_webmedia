@@ -71,9 +71,7 @@ public class TaggingFactory {
 		return text;
 	}
 
-    /*
-     *  Retira Espaço
-     */
+
 	public static String[] inputDados(String text) {
 		return text.split(" ");
 	}
@@ -141,17 +139,10 @@ public class TaggingFactory {
 				if (isTagSimResult !=0) {
 					System.out.println("VALOR PARA A CONDIÇÃO DO IF -> " + isTagSimResult);
 					System.out.println("VALOR INSERIDO DO BANCO " + isTagSimResult);
-						
 				} else {
-											
 					System.out.println("TAG 1 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag1);
 					System.out.println("TAG 2 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag2);
-							
-					try {
-						
-					} catch(Exception e) {
-						System.out.println("");
-					}
+				
 					ldsdWeighted = LDSD.LDSDweighted("http://dbpedia.org/resource/" + nameTag1, "http://dbpedia.org/resource/" + nameTag2); }
 				
 					System.out.println("LDSD:  " + nameTag1 + " -  " + nameTag2 + " = " + isTagSimResult);
@@ -167,6 +158,11 @@ public class TaggingFactory {
 					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), isTagSimResult, "LDSD");
 				}
 			}
+	
+		//	if(mapResultLDSDweighted.size() >= cont) {
+		//		break;
+		//	}
+		
 		}
 
 		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
@@ -177,7 +173,7 @@ public class TaggingFactory {
 		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
 		
 		if(resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
-		if(resultSumSemantic >= 1.0) resultSumSemantic = 1.0;
+		if(resultSumSemantic >= 1.0000000) resultSumSemantic = 1.0000000;
 		
 		return resultSumSemantic;
 	}
@@ -248,10 +244,6 @@ public class TaggingFactory {
 		}
 	}
 	
-	
-	/*
-	 * Ordena pelo rating dos filmes selecionados no TestSet 
-	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<Ratings> orderTestSetByRating(List<Ratings> testSet) {
 		
@@ -268,7 +260,7 @@ public class TaggingFactory {
 	}
 	
 	/*
-	 * Calcula a fórmula proposta no projeto para calcular a similaridade jaccard em conjunto com a similaridade semântica
+	 * Faz o calculo proposto para melhorar a precição da recomendação
 	 */
 	public static double calculeSimilarityAndJaccard(double  union, double  intersection, double similarity) {
 
@@ -329,6 +321,7 @@ public class TaggingFactory {
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
+				
 				List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
 				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
 				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
@@ -336,7 +329,6 @@ public class TaggingFactory {
 								
 				System.out.println("-------------- PRECISION ----------------");
 				System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
-				dbFunctions.insertOrUpdatePrecision(jaccardAndLDSDRankedList, filmRatingList, PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
 				System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
