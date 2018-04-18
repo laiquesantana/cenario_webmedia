@@ -15,10 +15,9 @@ public class CBRecommender {
 	    // createScenario();
 	   
 	         recommend(2299);
-	
-	   //    recommend(2931);
-	   //    recommend(1629);
-	   //    recommend(1678);
+	         recommend(2931);
+	         recommend(1629);
+	         recommend(1678);
 	}
 
 	public static void createScenario() {
@@ -290,7 +289,7 @@ public class CBRecommender {
 
 
 	public static void recommend(int userId) {
-		
+		int limitUserModel = 5;
 		int limitMax = 5;
 		int limitMin = 5;
 		
@@ -298,12 +297,13 @@ public class CBRecommender {
 		DBFunctions dbFunctions = new DBFunctions();
 
 		System.out.println(" \n ************* List UserModel ************* \n");
-		List<Integer> userModel = dbFunctions.findByUserRating(userId, 5);
+		List<Integer> userModel = dbFunctions.findByUserRating(userId, limitUserModel);
 		System.out.println(" \n ******************************************* \n");
 
-		System.out.println(" \n ************* Filmes DataSet ************* \n");
-		List<Ratings> testSetIrrelevant = DBFunctions.createTestSetByMax(userId,limitMax,3);
-		List<Ratings> testSetRelevant = DBFunctions.createTestSetByMin(userId,limitMin,4);
+		System.out.println(" \n ************* Filmes TestSet ************* \n");
+		List<Ratings> testSetRelevant = DBFunctions.createTestSetByMin(2199,limitMin,4);
+		List<Ratings> testSetIrrelevant = DBFunctions.createTestSetByMax(2199,limitMax,3);
+	
 		
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetRelevant));
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetIrrelevant));

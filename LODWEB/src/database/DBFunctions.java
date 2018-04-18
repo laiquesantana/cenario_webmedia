@@ -1762,8 +1762,8 @@ public class DBFunctions {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 		
-		String userModel = TaggingFactory.loadNameTagArray(userModelList);
-		String testSet = TaggingFactory.loadNameTagArray(testSetList);
+		String userModel = TaggingFactory.loadNameFilmString(userModelList);
+		String testSet = TaggingFactory.loadNameFilmString(testSetList);
 		
 		try {
 			try {

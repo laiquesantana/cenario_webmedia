@@ -70,6 +70,28 @@ public class TaggingFactory {
 		
 		return text;
 	}
+	
+	public static String loadNameFilmString(List<Integer> filmes) {
+		String text = null;
+		
+		for(int filme : filmes) {
+			text = text + "," + DBFunctions.findNameOfFilm(filme);
+		}
+		
+		return text;
+	}
+	
+	
+	
+	public static String saveLoadNameTagArray(List<Integer> filmes) {
+		String text = null;
+		
+		for(int filme : filmes) {
+			text = text + "," + DBFunctions.getNameOfTag(filme);
+		}
+		
+		return text;
+	}
 
 
 	public static String[] inputDados(String text) {
@@ -333,19 +355,18 @@ public class TaggingFactory {
 			//	System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
 								
 			
-				System.out.println(" -------------- PRECISION LDSD + JACCARD---------------- \n");
+				System.out.println(" -------------- PRECISION COSINE---------------- \n");
 				double precisionJaccardAndLDSDRankedList = PrecisionAndRecall.precision(cosineRankedList,filmRatingList);
 				System.out.println("VALOR DO PRECISION: COSINE -> " + precisionJaccardAndLDSDRankedList);
 				
-				System.out.println(" -------------- AP: LDSD+JACCARD ---------------- \n");
+				System.out.println(" -------------- AP: COSINE ---------------- \n");
+			
+				System.out.println("VALOR AP 3 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 3));
+				System.out.println("VALOR AP 5 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 5));
+				System.out.println("VALOR AP 10 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 10));
 				
 				
-				System.out.println("xxxxxxxx 3 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 3));
-				System.out.println("vvvvvvvv 5 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 5));
-				System.out.println("bbbbbbbb 10 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 10));
-				
-				
-				double mapJaccardAndLDSDRankedList = calculeMAP(cosineRankedList,filmRatingList, "LDSD+JACCARD");
+				double mapJaccardAndLDSDRankedList = calculeMAP(cosineRankedList,filmRatingList, "COSINE");
 				
 				/*
 				 * Salva o resultado dos calculos de Precisio
@@ -354,30 +375,30 @@ public class TaggingFactory {
 						userId, 
 						userModel, 
 						filmRatingList, 
-						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 3), 
-						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 5), 
-						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 10), 
+						calculeAP(cosineRankedList,filmRatingList, "COSINE", 3), 
+						calculeAP(cosineRankedList,filmRatingList, "COSINE", 5), 
+						calculeAP(cosineRankedList,filmRatingList, "COSINE", 10), 
 						precisionJaccardAndLDSDRankedList, 
 						mapJaccardAndLDSDRankedList, 
-						"LDSD+JACCARD");
+						"COSINE");
 
 	}
 	
-	public static double calculeAP(List<Integer> rankedList, List<Integer> testList, String similarity, int value) {
+	public static double calculeAP(List<Integer> rankedList, List<Integer> testList, String similarity, int limit) {
 
 		List<Integer> listRank = new ArrayList<Integer>(); 
 		int cont = 0;
 		
-		for (int rank: rankedList) {
+		for (int test: testList) {
 			cont++;
-			if(cont >= value) {
-				listRank.add(rank);
+			if(cont <= limit) {
+				listRank.add(test);
 			}
 		}
-		
+
 		double AP = PrecisionAndRecall.AP(listRank, testList, new ArrayList<Integer>());
 
-		System.out.println("NOME AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
+		System.out.println("VALOR AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
 
 		return AP;
 	}
