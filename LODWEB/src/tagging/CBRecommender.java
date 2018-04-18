@@ -15,10 +15,10 @@ public class CBRecommender {
 	    // createScenario();
 	   
 	 //    recommend(2299);
-	 //    recommend(342);
-	       recommend(2931);
-	//     recommend(1629);
-	//     recommend(1678);
+	
+	   //  recommend(2931);
+	 //    recommend(1629);
+	     recommend(1678);
 	}
 
 	public static void createScenario() {
