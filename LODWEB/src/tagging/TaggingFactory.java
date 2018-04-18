@@ -370,14 +370,14 @@ public class TaggingFactory {
 		
 		for (int rank: rankedList) {
 			cont++;
-			if(cont <= value) {
+			if(cont >= value) {
 				listRank.add(rank);
 			}
 		}
 		
 		double AP = PrecisionAndRecall.AP(listRank, testList, new ArrayList<Integer>());
 
-		System.out.println("VALOR AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
+		System.out.println("NOME AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
 
 		return AP;
 	}
