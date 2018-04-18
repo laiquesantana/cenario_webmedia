@@ -46,6 +46,7 @@ import node.NodeUtil;
 import node.SparqlWalk;
 import parser.Parser;
 import tagging.CBRecommender;
+import tagging.TaggingFactory;
 import util.StringUtilsNode;
 
 /**
@@ -1753,6 +1754,56 @@ public class DBFunctions {
 		}
 
 	}
+	
+	/*
+	 * Salva o Resultado dos calculos feito do usuário
+	 */
+	public void saveResult(int idUser, List<Integer> userModelList, List<Integer> testSetList, double ap3, double ap5, double ap10, double precision, double map, String type) {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = null;
+		
+		String userModel = TaggingFactory.loadNameTagArray(userModelList);
+		String testSet = TaggingFactory.loadNameTagArray(testSetList);
+		
+		try {
+			try {
+				String query = "INSERT INTO `lod`.`result` (`iduser`, `usermodel`, `testset`, `p3`, `p5`, `p10`, `precision`, `map`, `type`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, idUser);
+				ps.setString(2, userModel);
+				ps.setString(3, testSet);
+				ps.setDouble(4, ap3);
+				ps.setDouble(5, ap5);
+				ps.setDouble(6, ap10);
+				ps.setDouble(7, precision);
+				ps.setDouble(8, map);
+				ps.setString(9, type);
+				ps.execute();
+				ps.close();
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
 		
 	public Tag findTag(String name) {
 		Tag tag = null;

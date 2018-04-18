@@ -313,38 +313,89 @@ public class TaggingFactory {
 												
 				for (model.Ratings rating : testSet) filmRatingList.add(rating.getIddocument());
 								
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "LDSD+JACCARD");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "WUP+JACCARD");
+			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "LDSD+JACCARD");
+			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "WUP+JACCARD");
 				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "COSINE");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "JACCARD");
+			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "JACCARD");
 				
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
-				
-				List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
-				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+			//	List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
+			//	List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
 				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
-				List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+			//	List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+				
+			//	System.out.println("-------------- PRECISION ----------------");
+			//	System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
+			//	System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
+			//	System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
+			//	System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
 								
-				System.out.println("-------------- PRECISION ----------------");
-				System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
-				System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
-				System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
-				System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
-				
-				
-				System.out.println("----------------- AP -----------------");
-				//System.out.println("VALOR AP LDSD + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsLDSDJaccard, idFilmRating, new ArrayList<Integer>()));
-//				System.out.println("VALOR AP WUP + JACCARD-> " + PrecisionAndRecall.AP(rankedItemsWupJaccard, idFilmRating, new ArrayList<Integer>()));
-//				System.out.println("VALOR AP WUP + COSINE-> " + PrecisionAndRecall.AP(rankedItemsWupCosine, idFilmRating, new ArrayList<Integer>()));
-//				System.out.println("VALOR AP LDSD + COSINE-> " + PrecisionAndRecall.AP(rankedItemsLDSDCosine, idFilmRating, new ArrayList<Integer>()));
-				
-				// createRecommendation top 5, top 10, top 15 (calcular o precision de todos e o Map( AP de todos/ 3))
 			
-			
+				System.out.println(" -------------- PRECISION LDSD + JACCARD---------------- \n");
+				double precisionJaccardAndLDSDRankedList = PrecisionAndRecall.precision(cosineRankedList,filmRatingList);
+				System.out.println("VALOR DO PRECISION: COSINE -> " + precisionJaccardAndLDSDRankedList);
+				
+				System.out.println(" -------------- AP: LDSD+JACCARD ---------------- \n");
+				
+				
+				System.out.println("xxxxxxxx 3 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 3));
+				System.out.println("vvvvvvvv 5 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 5));
+				System.out.println("bbbbbbbb 10 -> " + calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 10));
+				
+				
+				double mapJaccardAndLDSDRankedList = calculeMAP(cosineRankedList,filmRatingList, "LDSD+JACCARD");
+				
+				/*
+				 * Salva o resultado dos calculos de Precisio
+				 */
+				dbFunctions.saveResult(
+						userId, 
+						userModel, 
+						filmRatingList, 
+						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 3), 
+						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 5), 
+						calculeAP(cosineRankedList,filmRatingList, "LDSD+JACCARD", 10), 
+						precisionJaccardAndLDSDRankedList, 
+						mapJaccardAndLDSDRankedList, 
+						"LDSD+JACCARD");
+
 	}
 	
+	public static double calculeAP(List<Integer> rankedList, List<Integer> testList, String similarity, int value) {
 
+		List<Integer> listRank = new ArrayList<Integer>(); 
+		int cont = 0;
+		
+		for (int rank: rankedList) {
+			cont++;
+			if(cont <= value) {
+				listRank.add(rank);
+			}
+		}
+		
+		double AP = PrecisionAndRecall.AP(listRank, testList, new ArrayList<Integer>());
+
+		System.out.println("VALOR AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
+
+		return AP;
+	}
+
+	public static double calculeMAP(List<Integer> rankedList, List<Integer> testList, String similarity) {
+
+		double apLdsdJaccard3 = calculeAP(rankedList, testList, similarity, 3);
+		double apLdsdJaccard5 = calculeAP(rankedList, testList, similarity, 5);
+		double apLdsdJaccard10 = calculeAP(rankedList, testList, similarity, 10);
+
+		double map = (apLdsdJaccard3 + apLdsdJaccard5 + apLdsdJaccard10) / 3;
+
+		System.out.println("VALOR MAP DA SIMLARIDADE " + similarity + ": " + map);
+		
+		return map;
+
+	}
+	
+	
 }
 

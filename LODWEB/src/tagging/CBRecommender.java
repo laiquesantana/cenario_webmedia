@@ -14,11 +14,11 @@ public class CBRecommender {
 	
 	    // createScenario();
 	   
-	 //    recommend(2299);
+	         recommend(2299);
 	
-	   //  recommend(2931);
-	 //    recommend(1629);
-	     recommend(1678);
+	   //    recommend(2931);
+	   //    recommend(1629);
+	   //    recommend(1678);
 	}
 
 	public static void createScenario() {
@@ -291,8 +291,9 @@ public class CBRecommender {
 
 	public static void recommend(int userId) {
 		
-		int limitMax = 2;
-		int limitMin = 1;
+		int limitMax = 5;
+		int limitMin = 5;
+		
 		List<Ratings> testSet = new ArrayList<Ratings>();
 		DBFunctions dbFunctions = new DBFunctions();
 
@@ -320,6 +321,6 @@ public class CBRecommender {
 		System.out.println(" \n *********************************************** \n");
 
 		TaggingFactory.createRecomedationSystem(userModel, testSet, userId);
-			
-	}
+		
+		}
 }
