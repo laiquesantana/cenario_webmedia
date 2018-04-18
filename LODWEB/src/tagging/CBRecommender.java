@@ -302,8 +302,8 @@ public class CBRecommender {
 		System.out.println(" \n ******************************************* \n");
 
 		System.out.println(" \n ************* Filmes DataSet ************* \n");
-		List<Ratings> testSetIrrelevant = DBFunctions.createTestSetByMax(2199,limitMax,3);
-		List<Ratings> testSetRelevant = DBFunctions.createTestSetByMin(2199,limitMin,4);
+		List<Ratings> testSetIrrelevant = DBFunctions.createTestSetByMax(userId,limitMax,3);
+		List<Ratings> testSetRelevant = DBFunctions.createTestSetByMin(userId,limitMin,4);
 		
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetRelevant));
 		testSet.addAll(TaggingFactory.orderTestSetByRating(testSetIrrelevant));
