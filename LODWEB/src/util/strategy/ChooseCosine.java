@@ -15,7 +15,7 @@ public class ChooseCosine implements Similarity {
 		DBFunctions dbFunctions = new DBFunctions();
 		double cosineSimilarity;
 			
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocuments(filmes, userId);
+		List<Integer> tagsFilmesAvaliados = DBFunctions.findTagOfDocuments(filmes);
 		ArrayList<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados); // List
 
 		for (int j = 0; j < filmesNotRating.size(); j++) {

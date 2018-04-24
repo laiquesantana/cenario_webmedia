@@ -16,11 +16,11 @@ public class ChooseLDSDJaccard implements Similarity {
  	double intersection;
  	double ResultCalcule;
 
-	@Override 
+ 	@Override 
 	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
 		DBFunctions dbFunctions = new DBFunctions();
 	
-		List<Integer> tagsUserModel = dbFunctions.findTagOfDocumentsLimitTag(userModel, userId, 5);
+		List<Integer> tagsUserModel = dbFunctions.findTagOfDocumentsLimitTag(userModel, 5);
 		ArrayList<Tag> nameOfTagsUserModel = dbFunctions.getNameOfTagsOfFilms(tagsUserModel); 
 	
 		for (int j = 0; j < testSet.size(); j++) {

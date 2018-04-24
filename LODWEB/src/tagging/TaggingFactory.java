@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+
 import database.DBFunctions;
 import metric.PrecisionAndRecall;
 import model.Ratings;
@@ -71,11 +73,11 @@ public class TaggingFactory {
 		return text;
 	}
 	
-	public static String loadNameFilmString(List<Integer> filmes) {
-		String text = null;
+	public static String listNameFilmString(List<Integer> filmes) {
+		String text = "";
 		
 		for(int filme : filmes) {
-			text = text + "," + DBFunctions.findNameOfFilm(filme);
+			text = text + DBFunctions.findNameOfFilm(filme) + ",";
 		}
 		
 		return text;
@@ -83,11 +85,11 @@ public class TaggingFactory {
 	
 	
 	
-	public static String saveLoadNameTagArray(List<Integer> filmes) {
-		String text = null;
+	public static String listNameTag(List<Integer> filmes) {
+		String text = "";
 		
 		for(int filme : filmes) {
-			text = text + "," + DBFunctions.getNameOfTag(filme);
+			text = text + DBFunctions.getNameOfTag(filme) + ",";
 		}
 		
 		return text;
@@ -103,7 +105,12 @@ public class TaggingFactory {
 	 */
 	public static String concatenaTagText(List<Tag> listTag) {
 		String valueTag = "";
+		
 		for (Tag tag : listTag) {
+			if(listTag.isEmpty()){
+				break;
+			}
+			
 			valueTag = valueTag + " " + tag.getName();
 		}
 
@@ -149,42 +156,38 @@ public class TaggingFactory {
 		for (Tag item1 : listTag1) {
 			for (Tag item2 : listTag2) {
 				cont = cont++;
-				
+
 				Tag tag1 = dbFunctions.findTag(item1.getName());
 				Tag tag2 = dbFunctions.findTag(item2.getName());
-				
+
 				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag1.getName());
 				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag2.getName());
-				
-				double isTagSimResult = dbFunctions.isTagSimResult(tag1, tag2, "LDSD");
-				
-				if (isTagSimResult !=0) {
-					System.out.println("VALOR PARA A CONDIÇÃO DO IF -> " + isTagSimResult);
-					System.out.println("VALOR INSERIDO DO BANCO " + isTagSimResult);
-				} else {
-					System.out.println("TAG 1 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag1);
-					System.out.println("TAG 2 SEM CARACTERES E LETRA MAIUSCULA-> " + nameTag2);
-				
-					ldsdWeighted = LDSD.LDSDweighted("http://dbpedia.org/resource/" + nameTag1, "http://dbpedia.org/resource/" + nameTag2); }
-				
-					System.out.println("LDSD:  " + nameTag1 + " -  " + nameTag2 + " = " + isTagSimResult);
 
-				if (isTagSimResult >= 1.0 && isTagSimResult != 0.0 || isTagSimResult !=0) {
-					System.out.println("-------------------------------------------");
-					System.out.println("VALOR DA SIMILARIDADE -> " + isTagSimResult);
-					System.out.println("TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 );
-					System.out.println("-------------------------------------------");			
+				
+				try {
+					double isTagSimResult = dbFunctions.isTagSimResult(tag1, tag2, "LDSD");
+					TimeUnit.SECONDS.sleep(1);
+					ldsdWeighted = LDSD.LDSDweighted("http://dbpedia.org/resource/" + nameTag1, "http://dbpedia.org/resource/" + nameTag2);
+					System.out.println("VALOR LDSD -> " + ldsdWeighted);
+					System.out.println("isTagSimResult -> " + isTagSimResult);
+
+					if (ldsdWeighted < 1.0 && isTagSimResult == 0.0) {
+						System.out.println("-------------------------------------------");
+						System.out.println("SALVOU: TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2  + " = " + ldsdWeighted);
+						System.out.println("-------------------------------------------");
+						mapResultLDSDweighted.put(nameTag1 + nameTag2, ldsdWeighted);
+						dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), ldsdWeighted, "LDSD");
+					} else {
+						mapResultLDSDweighted.put(nameTag1 + nameTag2, isTagSimResult);
+					}
 					
-					mapResultLDSDweighted.put(nameTag1 + nameTag2, isTagSimResult);
-					
-					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), isTagSimResult, "LDSD");
+				} catch (Exception e) {
+					System.out.println("encontrou o erro: " + e );
 				}
+			
+
 			}
-	
-		//	if(mapResultLDSDweighted.size() >= cont) {
-		//		break;
-		//	}
-		
+
 		}
 
 		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
@@ -326,97 +329,92 @@ public class TaggingFactory {
 	/*
 	 * Calcula a similaridade e salva no banco de dados e devolve uma recomendações de filmes
 	 */
-	public static void createRecomedationSystem(List<Integer> userModel, List<model.Ratings> testSet, int userId) {
+	public static void createRecomedationSystem(List<Integer> userModel, List<Ratings> testSet, int userId) {
 		
 		DBFunctions dbFunctions = new DBFunctions();
 		
-				// Cria a lista com ID dos Itens Correntos
-				List<Integer> filmRatingList = new ArrayList<Integer>();
-												
-				for (model.Ratings rating : testSet) filmRatingList.add(rating.getIddocument());
-								
-			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "LDSD+JACCARD");
-			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "WUP+JACCARD");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "COSINE");
-			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, filmRatingList, userId, "JACCARD");
+				/*
+				 * Cria a lista com ID dos filmes
+				 */
+				List<Integer> testSetList = createTestSetList(testSet);
+											
+				
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "COSINE");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "LDSD+JACCARD");
 				
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
-			//	List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
-			//	List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+			    List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
 				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
-			//	List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
-				
-			//	System.out.println("-------------- PRECISION ----------------");
-			//	System.out.println("VALOR DO PRECISION: LDSD + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndLDSDRankedList,filmRatingList));
-			//	System.out.println("VALOR DO PRECISION: WUP + JACCARD -> " + PrecisionAndRecall.precision(jaccardAndWUPRankedList,filmRatingList));
-			//	System.out.println("VALOR DO PRECISION: COSINE -> " + PrecisionAndRecall.precision(cosineRankedList,filmRatingList));
-			//	System.out.println("VALOR DO PRECISION: JACCARD -> " + PrecisionAndRecall.precision(jaccardRankedList,filmRatingList));
-								
-			
-				System.out.println(" -------------- PRECISION COSINE---------------- \n");
-				double precisionJaccardAndLDSDRankedList = PrecisionAndRecall.precision(cosineRankedList,filmRatingList);
-				System.out.println("VALOR DO PRECISION: COSINE -> " + precisionJaccardAndLDSDRankedList);
-				
-				System.out.println(" -------------- AP: COSINE ---------------- \n");
-			
-				System.out.println("VALOR AP 3 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 3));
-				System.out.println("VALOR AP 5 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 5));
-				System.out.println("VALOR AP 10 -> " + calculeAP(cosineRankedList,filmRatingList, "COSINE", 10));
-				
-				
-				double mapJaccardAndLDSDRankedList = calculeMAP(cosineRankedList,filmRatingList, "COSINE");
+				List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+				List<Integer> jaccardAndLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
 				
 				/*
-				 * Salva o resultado dos calculos de Precisio
+				 * Calcula a Precisição, AP e MAP
 				 */
-				dbFunctions.saveResult(
-						userId, 
-						userModel, 
-						filmRatingList, 
-						calculeAP(cosineRankedList,filmRatingList, "COSINE", 3), 
-						calculeAP(cosineRankedList,filmRatingList, "COSINE", 5), 
-						calculeAP(cosineRankedList,filmRatingList, "COSINE", 10), 
-						precisionJaccardAndLDSDRankedList, 
-						mapJaccardAndLDSDRankedList, 
-						"COSINE");
-
+				calculeResultPrecisionAndMAP(userModel, cosineRankedList, testSetList, userId, "COSINE");
+				calculeResultPrecisionAndMAP(userModel, jaccardRankedList, testSetList, userId, "JACCARD");
+				calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
+				calculeResultPrecisionAndMAP(userModel, jaccardAndLDSDRankedList, testSetList, userId, "LDSD+JACCARD");
 	}
 	
 	public static double calculeAP(List<Integer> rankedList, List<Integer> testList, String similarity, int limit) {
 
-		List<Integer> listRank = new ArrayList<Integer>(); 
+		List<Integer> listRankedByLimit = new ArrayList<Integer>(); 
 		int cont = 0;
 		
-		for (int test: testList) {
+		for (int ranked: rankedList) {
 			cont++;
+			
 			if(cont <= limit) {
-				listRank.add(test);
+				listRankedByLimit.add(ranked);
 			}
 		}
 
-		double AP = PrecisionAndRecall.AP(listRank, testList, new ArrayList<Integer>());
+		double AP = PrecisionAndRecall.AP(listRankedByLimit, testList, new ArrayList<Integer>());
 
-		System.out.println("VALOR AP: " + similarity + ": " + AP + " Qtd -> " + listRank.size());
+		System.out.println("VALOR AP: " + similarity + ": " + AP + " Qtd -> " + listRankedByLimit.size());
 
 		return AP;
 	}
 
-	public static double calculeMAP(List<Integer> rankedList, List<Integer> testList, String similarity) {
+	public static double calculeMAP(double ap3, double ap5, double ap10, String nameSimilarity) {
 
-		double apLdsdJaccard3 = calculeAP(rankedList, testList, similarity, 3);
-		double apLdsdJaccard5 = calculeAP(rankedList, testList, similarity, 5);
-		double apLdsdJaccard10 = calculeAP(rankedList, testList, similarity, 10);
+		double map = (ap3 + ap5 + ap10) / 3;
 
-		double map = (apLdsdJaccard3 + apLdsdJaccard5 + apLdsdJaccard10) / 3;
-
-		System.out.println("VALOR MAP DA SIMLARIDADE " + similarity + ": " + map);
+		System.out.println("\n VALOR MAP DO " + nameSimilarity + ": " + map);
 		
 		return map;
 
 	}
+
+	public static List<Integer> createTestSetList(List<Ratings> testSetList) {
+
+		List<Integer> filmRatingList = new ArrayList<Integer>();
+
+		for (Ratings rating : testSetList) {
+			filmRatingList.add(rating.getIddocument());
+		}
+		return filmRatingList;
+	}
 	
+	public static void calculeResultPrecisionAndMAP(List<Integer> userModel, List<Integer> rankedList, List<Integer> testSetList, int userId, String type) {
+		DBFunctions dbFunctions = new DBFunctions();
+				
+		System.out.println(" \n -------------- PRECISION " + type + " ---------------- \n");
+		double precsion = PrecisionAndRecall.precision(rankedList,testSetList);
+		System.out.println("VALOR DO PRECISION " + type + " : " + precsion + "\n");
+		
+		double ap3 = calculeAP(testSetList, rankedList, type, 3); 
+		double ap5 = calculeAP(testSetList, rankedList, type, 5);
+		double ap10 = calculeAP(testSetList, rankedList, type, 10);
+		double map = calculeMAP(ap3, ap5, ap10, type);
+		
+		dbFunctions.saveResult(userId, userModel, testSetList, ap3, ap5, ap10, precsion, map, type);
+
+	}
 	
 }
-

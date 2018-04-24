@@ -21,7 +21,7 @@ public class ChooseWUPCosine implements Similarity{
     public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId) {
 		DBFunctions dbFunctions = new DBFunctions();
 		
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, userId, 5);
+		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, 5);
 		List<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados);
 	
 		for (int j = 0; j < filmesNotRating.size(); j++) {

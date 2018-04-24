@@ -72,18 +72,11 @@ public class WordNetFactory {
 		double distance;
 
 		double resultSemantic = 0;
-		int cont = 0;
-		
 		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
 
 		for (Tag word1 : words1) {
 			for (Tag word2 : words2) {
-				
-				
-			//	if(mapResultLDSDweighted.size() >= cont) {
-			//		break;
-			//	}
-
+		
 				try { Thread.sleep (200); } catch (InterruptedException ex) {}
 				
 				Tag tag1 = dbFunctions.findTag(word1.getName());
@@ -119,11 +112,8 @@ public class WordNetFactory {
 		if(resultSemantic > 1) {
 			 resultSemantic = 1;
 		}
-		
-
-				
+			
 		return resultSemantic;
 	}
 
-	
 }

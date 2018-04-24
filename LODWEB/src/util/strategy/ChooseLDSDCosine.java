@@ -15,17 +15,17 @@ public class ChooseLDSDCosine implements Similarity {
 	double union;
  	double intersection;
  	double ResultCalcule;
-
+	
 	@Override 
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId) {
+	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
 		DBFunctions dbFunctions = new DBFunctions();
 			
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, userId, 5);
+		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(userModel, 5);
 		ArrayList<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados); 
 	
-		for (int j = 0; j < filmesNotRating.size(); j++) {
+		for (int j = 0; j < testSet.size(); j++) {
 			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), 5);
+			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), 5);
 			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
 			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
@@ -36,7 +36,7 @@ public class ChooseLDSDCosine implements Similarity {
 				 	
 		 	ResultCalcule = (cosineSimilarity + calculeSemanticLDSD) / 2;
 					
-		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+COSINE", cosineSimilarity, calculeSemanticLDSD, ResultCalcule, filmesNotRating.get(j), userId);
+		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+COSINE", cosineSimilarity, calculeSemanticLDSD, ResultCalcule, testSet.get(j), userId);
 		}
 	}
 }
