@@ -9,34 +9,32 @@ import database.DBFunctions;
 import model.Tag;
 import tagging.TaggingFactory;
 
-public class ChooseLDSDCosine implements Similarity {
+public class ChooseLDSD implements Similarity {
 	double similarityJaccard;
-	double calculeSemanticLDSD;
+	double calculeLDSD;
 	double union;
  	double intersection;
  	double ResultCalcule;
 	
 	@Override 
-	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
+	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId, int limitTag) {
 		DBFunctions dbFunctions = new DBFunctions();
 			
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(userModel, 5);
+		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(userModel, limitTag);
 		ArrayList<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados); 
 	
 		for (int j = 0; j < testSet.size(); j++) {
 			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), 5);
+			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), limitTag);
 			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
-			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating, userId);
+			calculeLDSD = TaggingFactory.calculeLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating, userId);
 			
-			if(calculeSemanticLDSD != calculeSemanticLDSD) calculeSemanticLDSD = 0;
+			if(calculeLDSD != calculeLDSD) calculeLDSD = 0;
 					
 			double cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.concatenaTagText(nameOfTagsFilmsHasRating), TaggingFactory.concatenaTagText(nameOfTagsFilmsNotRating));
-				 	
-		 	ResultCalcule = (cosineSimilarity + calculeSemanticLDSD) / 2;
-					
-		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+COSINE", cosineSimilarity, calculeSemanticLDSD, ResultCalcule, testSet.get(j), userId);
+			 			
+		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD", cosineSimilarity, calculeLDSD, calculeLDSD, testSet.get(j), userId);
 		}
 	}
 }

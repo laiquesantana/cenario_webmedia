@@ -1,22 +1,22 @@
 package model;
 
 import tagging.Document;
-import tagging.User2222;
+import tagging.User;
 
 public class Rating {
 
 	int id;
 	Document document;
-	User2222 user;
+	User user;
 	int rating;
 
-	public Rating(Document document, User2222 user, int rating) {
+	public Rating(Document document, User user, int rating) {
 		this.document = document;
 		this.user = user;
 		this.rating = rating;
 	}
 	
-	public Rating(Document document, User2222 user) {
+	public Rating(Document document, User user) {
 		this.document = document;
 		this.user = user;
 	}
@@ -33,11 +33,11 @@ public class Rating {
 		this.document = document;
 	}
 
-	public User2222 getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(User2222 user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 

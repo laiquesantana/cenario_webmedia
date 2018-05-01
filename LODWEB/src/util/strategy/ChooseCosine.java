@@ -11,7 +11,7 @@ import tagging.TaggingFactory;
 public class ChooseCosine implements Similarity {
 	
 	@Override
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId) {
+	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId, int limitTag) {
 		DBFunctions dbFunctions = new DBFunctions();
 		double cosineSimilarity;
 			

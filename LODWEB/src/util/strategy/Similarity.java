@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface Similarity {
 
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId);
+	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId, int limitTag);
 	
 }

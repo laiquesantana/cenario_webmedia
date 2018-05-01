@@ -17,15 +17,15 @@ public class ChooseLDSDJaccard implements Similarity {
  	double ResultCalcule;
 
  	@Override 
-	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
+	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId, int limitTAg) {
 		DBFunctions dbFunctions = new DBFunctions();
 	
-		List<Integer> tagsUserModel = dbFunctions.findTagOfDocumentsLimitTag(userModel, 5);
+		List<Integer> tagsUserModel = dbFunctions.findTagOfDocumentsLimitTag(userModel, limitTAg);
 		ArrayList<Tag> nameOfTagsUserModel = dbFunctions.getNameOfTagsOfFilms(tagsUserModel); 
 	
 		for (int j = 0; j < testSet.size(); j++) {
 	
-			List<Integer> tagsTestSet = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), 5);
+			List<Integer> tagsTestSet = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), limitTAg);
 			ArrayList<Tag> nameOfTagsTestSet = dbFunctions.getNameOfTagsOfFilms(tagsTestSet);
 
 			union = Jaccard.union(nameOfTagsUserModel, nameOfTagsTestSet);

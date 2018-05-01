@@ -14,7 +14,7 @@ public class CBRecommender {
 		/*
 		 * Quantidade de usuarios
 		 */
-		int users = 100;
+		int users = 1;
 		
 		
 		init = System.currentTimeMillis();

@@ -13,12 +13,12 @@ import model.Tag;
 import node.Classifier;
 import node.IConstants;
 import node.Lodica;
-import similarity.LDSD;
 import util.StringUtilsNode;
 import util.strategy.ChooseCosine;
 import util.strategy.ChooseJaccard;
-import util.strategy.ChooseLDSDCosine;
+import util.strategy.ChooseLDSD;
 import util.strategy.ChooseLDSDJaccard;
+import util.strategy.ChooseWUP;
 import util.strategy.ChooseWUPJaccard;
 import util.strategy.Similarity;
 
@@ -192,6 +192,49 @@ public class TaggingFactory {
 		return resultSumSemantic;
 	}
 	
+	public static double calculeLDSD(List<Tag> listTag1, List<Tag> listTag2, int UserId) {
+		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
+		int cont = 0;
+		double resultSumSemantic = 0;
+		DBFunctions dbFunctions = new DBFunctions();
+
+		for (Tag item1 : listTag1) {
+			for (Tag item2 : listTag2) {
+				cont = cont++;
+
+				Tag tag1 = dbFunctions.findTag(item1.getName());
+				Tag tag2 = dbFunctions.findTag(item2.getName());
+
+				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag1.getName());
+				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag2.getName());
+
+				double valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+
+				System.out.println(" valueLDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
+				
+				if (valueLDSD < 1.0) {
+					System.out.println("-------------------------------------------");
+					System.out.println("SALVOU: TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
+					System.out.println("-------------------------------------------");
+					mapResultLDSDweighted.put(nameTag1 + nameTag2, valueLDSD);
+					
+				}
+			}
+		}
+
+		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
+		System.out.println(mapResultLDSDweighted + " \n");
+		System.out.println("\n ================================== RESULTADOS ====================================== ");
+
+		// Resultado da soma de todos as tags que existe similardade dividida pela
+		// quantidade de itens da lista
+		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
+
+		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
+	
+		return resultSumSemantic / mapResultLDSDweighted.size();
+	}
+	
 	
 	/*
 	 * Escolhe qual calculo de similaridade irá calcular
@@ -204,27 +247,27 @@ public class TaggingFactory {
 			switch (type) {
 			case "LDSD+JACCARD":
 				similarity = new ChooseLDSDJaccard();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
-			case "LDSD+COSINE":
-				similarity = new ChooseLDSDCosine();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+			case "LDSD":
+				similarity = new ChooseLDSD();
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
 			case "WUP+JACCARD":
 				similarity = new ChooseWUPJaccard();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
-			case "WUP+COSINE":
-				similarity = new ChooseLDSDCosine();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+			case "WUP":
+				similarity = new ChooseWUP();
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
 			case "JACCARD":
 				similarity = new ChooseJaccard();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
 			case "COSINE":
 				similarity = new ChooseCosine();
-				similarity.choiceOfSimilarity(userModel, testSet, userId);
+				similarity.choiceOfSimilarity(userModel, testSet, userId, 5);
 				break;
 			default:
 				throw new RuntimeException("Strategy not found.");
@@ -328,26 +371,34 @@ public class TaggingFactory {
 				List<Integer> testSetList = createTestSetList(testSet);
 											
 				
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "COSINE");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "JACCARD");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
+				
+				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "COSINE");
+				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP");
+			    //TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
+				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "LDSD");
+				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
-				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
-				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
-			    List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
-			    List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
+				//List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
+			   // List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+			    List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
+				//List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+			   // List<Integer> COSINERankedList = dbFunctions.resultRecommendation(userId, "LDSD");
+			   // List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
 				
 				/*
 				 * Calcula a Precisição, AP e MAP
 				 */
-			    calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
-				calculeResultPrecisionAndMAP(userModel, cosineRankedList, testSetList, userId, "COSINE");
-		    	calculeResultPrecisionAndMAP(userModel, jaccardRankedList, testSetList, userId, "JACCARD");
-		    	calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
+			    
+			    //calculeResultPrecisionAndMAP(userModel, cosineRankedList, testSetList, userId, "COSINE");
+		    	//calculeResultPrecisionAndMAP(userModel, jaccardRankedList, testSetList, userId, "JACCARD");
+	            calculeResultPrecisionAndMAP(userModel, WUPRankedList, testSetList, userId, "WUP");
+			    //calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
+			    //calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "LDSD");
+				//calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 	}
 	

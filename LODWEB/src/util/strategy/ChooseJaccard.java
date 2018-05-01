@@ -10,7 +10,7 @@ public class ChooseJaccard implements Similarity {
 	double similarityJaccard;
 
 	@Override
-	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId) {
+	public void choiceOfSimilarity(List<Integer> userModel, List<Integer> testSet, int userId, int limitTag) {
 		DBFunctions dbFunctions = new DBFunctions();
 
 		List<Integer> listTagsUserModel = DBFunctions.findTagOfDocuments(userModel);

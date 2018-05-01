@@ -1857,29 +1857,7 @@ public class DBFunctions {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-/*
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException ex) {
-		}
 
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * from `lod`.`tag_sim` where `idtag2`= ? AND `idtag1`= ?";
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, item1.getId());
-			ps.setInt(2, item2.getId());
-			ResultSet rs = ps.executeQuery();
-			while (rs != null && rs.next()) {
-				System.out.println("Encontrada no BANDO DE DADOS -> ID TAG 1 -> " + rs.getInt(1) + " |  ID TAG 2 -> "
-						+ rs.getInt(2) + " |  Valor -> " + rs.getDouble(3) + " | sim -> " + rs.getString(4));
-				return rs.getDouble(3);
-			}
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-*/
 		return 0;
 	}
 
@@ -1910,7 +1888,7 @@ public class DBFunctions {
 
 	try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
+			String query = "SELECT distinct b.score from `lod`.`semantic_raking` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, uri1);
 			ps.setInt(2, uri2);

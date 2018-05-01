@@ -15,15 +15,15 @@ public class ChooseWUPJaccard implements Similarity{
  	double ResultCalcule;
 
 	@Override
-    public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId) {
+    public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId, int limitTag) {
 		DBFunctions dbFunctions = new DBFunctions();
 		
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, 5);
+		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, limitTag);
 		List<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados);
 		
 		for (int j = 0; j < filmesNotRating.size(); j++) {
 			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), 5);
+			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), limitTag);
 			List<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
 			calculeSemanticWup = WordNetFactory.calculeTagSemanticWUP(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
