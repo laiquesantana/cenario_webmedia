@@ -372,33 +372,33 @@ public class TaggingFactory {
 											
 				
 				
-				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "COSINE");
-				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "COSINE");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "JACCARD");
 				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP");
-			    //TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
-				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "LDSD");
-				//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
+			    TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "LDSD");
+				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
 				 */
-				//List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
-			   // List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+				List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
+			    List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
 			    List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
-				//List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
-			   // List<Integer> COSINERankedList = dbFunctions.resultRecommendation(userId, "LDSD");
-			   // List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
+				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+			    List<Integer> LDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD");
+			    List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
 				
 				/*
 				 * Calcula a Precisição, AP e MAP
 				 */
 			    
-			    //calculeResultPrecisionAndMAP(userModel, cosineRankedList, testSetList, userId, "COSINE");
-		    	//calculeResultPrecisionAndMAP(userModel, jaccardRankedList, testSetList, userId, "JACCARD");
+			    calculeResultPrecisionAndMAP(userModel, cosineRankedList, testSetList, userId, "COSINE");
+		    	calculeResultPrecisionAndMAP(userModel, jaccardRankedList, testSetList, userId, "JACCARD");
 	            calculeResultPrecisionAndMAP(userModel, WUPRankedList, testSetList, userId, "WUP");
-			    //calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
-			    //calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "LDSD");
-				//calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
+			    calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
+			    calculeResultPrecisionAndMAP(userModel, LDSDRankedList, testSetList, userId, "LDSD");
+				calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 	}
 	
