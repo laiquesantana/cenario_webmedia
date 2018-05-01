@@ -34,11 +34,11 @@ public class ChooseLDSDJaccard implements Similarity {
 			
 			similarityJaccard = Jaccard.similarityJaccard(nameOfTagsUserModel, nameOfTagsTestSet);
 			
-			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsUserModel, nameOfTagsTestSet);
+			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsUserModel, nameOfTagsTestSet, userId);
 					
 			ResultCalcule = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticLDSD);
 					
-		 	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+JACCARD", similarityJaccard, calculeSemanticLDSD, ResultCalcule, testSet.get(j), userId);
+	    	TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("LDSD+JACCARD", similarityJaccard, calculeSemanticLDSD, ResultCalcule, testSet.get(j), userId);
 		}
 	}
 

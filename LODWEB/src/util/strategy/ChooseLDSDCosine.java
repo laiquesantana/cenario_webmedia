@@ -28,7 +28,7 @@ public class ChooseLDSDCosine implements Similarity {
 			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(testSet.get(j), 5);
 			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
 	
-			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
+			calculeSemanticLDSD = TaggingFactory.calculeTagSemanticLDSD(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating, userId);
 			
 			if(calculeSemanticLDSD != calculeSemanticLDSD) calculeSemanticLDSD = 0;
 					

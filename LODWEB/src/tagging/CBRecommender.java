@@ -38,7 +38,7 @@ public class CBRecommender {
 		DBFunctions dbFunctions = new DBFunctions();
 		List<Ratings> testSet = new ArrayList<Ratings>();
 		
-		System.out.println("ID USUARO -> " + idUser);
+		System.out.println("ID USUARIO -> " + idUser);
 
 		System.out.println(" \n ************* List UserModel ************* \n");
 		List<Integer> userModel = dbFunctions.createUserModel(idUser, limitItemUserModel);

@@ -72,6 +72,8 @@ public class WordNetFactory {
 		double distance;
 
 		double resultSemantic = 0;
+		int cont = 0;
+		
 		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
 
 		for (Tag word1 : words1) {
@@ -116,4 +118,5 @@ public class WordNetFactory {
 		return resultSemantic;
 	}
 
+	
 }

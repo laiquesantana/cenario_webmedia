@@ -29,7 +29,9 @@ public class ChooseWUPJaccard implements Similarity{
 			calculeSemanticWup = WordNetFactory.calculeTagSemanticWUP(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
 			
 			similarityJaccard = Jaccard.similarityJaccard(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
+			
 			union = Jaccard.union(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
+		
 			intersection = Jaccard.intersection(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
 			 	
 			if(calculeSemanticWup != calculeSemanticWup) calculeSemanticWup = 0;

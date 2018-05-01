@@ -28,6 +28,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
 import com.drew.metadata.photoshop.PsdHeaderDescriptor;
+import com.sun.xml.bind.v2.runtime.reflect.opt.TransducedAccessor_field_Double;
 
 import cosinesimilarity.LuceneCosineSimilarity;
 import model.HitRate;
@@ -468,8 +469,7 @@ public class DBFunctions {
 		// dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
 		// System.out.println();
 
-		System.out.println(createTestSetByMax(2199, 5, 3));
-		System.out.println(createTestSetByMin(2199, 5, 4));
+	
 
 		// DBFunctions.loadBrazilianTitles();
 
@@ -1579,7 +1579,6 @@ public class DBFunctions {
 
 		for (int i = 0; i < tagsFilmesAvaliados.size(); i++) {
 			nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i))));
-			System.out.println("NOMES DAS TAG -> " + DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i)));
 		}
 		return nameOfTagsFilmsHasRating;
 	}
@@ -1588,8 +1587,7 @@ public class DBFunctions {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
 		nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(tagsFilmesAvaliado)));
-		System.out.println("getNameOfTagsOfFilm -> " + DBFunctions.getNameOfTag(tagsFilmesAvaliado));
-
+	
 		return nameOfTagsFilmsHasRating;
 	}
 
@@ -1597,8 +1595,7 @@ public class DBFunctions {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
 		nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(idDocument)));
-		System.out.println("NOME DO FILME -> " + DBFunctions.getNameOfTag(idDocument));
-
+	
 		return nameOfTagsFilmsHasRating;
 	}
 
@@ -1679,11 +1676,6 @@ public class DBFunctions {
 		PreparedStatement ps = null;
 
 		try {
-			Thread.sleep(200);
-		} catch (InterruptedException ex) {
-		}
-
-		try {
 			try {
 				String query = "INSERT INTO `tag_sim` ( `idtag1`, `idtag2`, `sim`, `tipo`) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE `idtag1` = `idtag1`, `idtag2` = `idtag2`";
 				ps = conn.prepareStatement(query);
@@ -1717,13 +1709,13 @@ public class DBFunctions {
 
 	}
 
-	public void insertOrUpdateSemantic(int idTag1, int idTag2, String sim, double score, int iduser) {
+	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, int iduser) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
 		try {
 			try {
-				String query = "REPLACE INTO `semantic` ( `uri1`, `uri2`, `sim`, `score`, `userid`) VALUES (?,?,?,?,?)";
+				String query = "REPLACE INTO `semantic_raking` ( `uri1`, `uri2`, `sim`, `score`, `userid`) VALUES (?,?,?,?,?)";
 				ps = conn.prepareStatement(query);
 				ps.setInt(1, idTag1);
 				ps.setInt(2, idTag2);
@@ -1810,11 +1802,6 @@ public class DBFunctions {
 		Tag tag = null;
 
 		try {
-			Thread.sleep(200);
-		} catch (InterruptedException ex) {
-		}
-
-		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * from `lod`.`tag` where `tag`= ? ";
 			PreparedStatement ps = conn.prepareStatement(query);
@@ -1870,7 +1857,7 @@ public class DBFunctions {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
+/*
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException ex) {
@@ -1892,7 +1879,7 @@ public class DBFunctions {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
+*/
 		return 0;
 	}
 
@@ -1921,14 +1908,16 @@ public class DBFunctions {
 
 	public boolean isFilmsExistSemantic(int uri1, int uri2, int userId, String sim) {
 
-		try {
+	try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * from `lod`.`semantic` where `uri1`= ? AND `uri2`= ? AND `userid` = ? AND `sim` = ?";
+			String query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, uri1);
 			ps.setInt(2, uri2);
-			ps.setInt(3, userId);
-			ps.setString(4, sim);
+			ps.setString(3, sim);
+			ps.setInt(4, uri2);
+			ps.setInt(5, uri1);
+			ps.setString(6, sim);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
@@ -1939,28 +1928,6 @@ public class DBFunctions {
 			ex.printStackTrace();
 		}
 
-		try {
-			Thread.sleep(200);
-			} catch (InterruptedException ex) {
-		}
-
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * from `lod`.`semantic` where `uri2`= ? AND `uri1`= ? AND `userid` = ? AND `sim` = ?";
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, uri1);
-			ps.setInt(2, uri2);
-			ps.setInt(3, userId);
-			ps.setString(4, sim);
-			ResultSet rs = ps.executeQuery();
-
-			while (rs != null && rs.next()) {
-				return true;
-			}
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
 		return false;
 	}
 
@@ -1973,7 +1940,7 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT * FROM semantic WHERE userid = ? AND sim = ? AND score != 0 AND score < 1 ORDER BY score DESC ";
+			String query = "SELECT DISTINCT * FROM semantic_raking WHERE userid = ? AND sim = ? AND score != 0 AND score < 1 ORDER BY score DESC ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, userid);
 			ps.setString(2, type);
@@ -2029,14 +1996,11 @@ public class DBFunctions {
 
 				int index = random.nextInt(relevants.size());
 				if (isExistFimlInTag(relevants.get(index).getIddocument())) {
-					System.out.println("CONDIÇÃO ->  " + isExistFimlInTag(relevants.get(index).getIddocument()));
 					System.out.println("FILME ->  " + relevants.get(index).getIddocument());
 
 					i++;
 					listRelevants.add(relevants.get(index));
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + relevants.get(index).getIddocument()
-							+ " " + DBFunctions.findNameOfFilm(relevants.get(index).getIddocument()) + " Rating: "
-							+ relevants.get(index).getRating());
+					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: "+ relevants.get(index).getRating());
 				}
 
 			}
@@ -2073,14 +2037,10 @@ public class DBFunctions {
 
 				int index = random.nextInt(irrelevants.size());
 				if (isExistFimlInTag(irrelevants.get(index).getIddocument())) {
-					System.out.println("CONDIÇÃO ->  " + isExistFimlInTag(irrelevants.get(index).getIddocument()));
 					System.out.println("FILME ->  " + irrelevants.get(index).getIddocument());
-
 					i++;
 					listIrrelevants.add(irrelevants.get(index));
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + irrelevants.get(index).getIddocument()
-							+ " " + DBFunctions.findNameOfFilm(irrelevants.get(index).getIddocument()) + " Rating: "
-							+ irrelevants.get(index).getRating());
+					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(index).getRating());
 				}
 
 			}
@@ -2222,13 +2182,8 @@ public class DBFunctions {
 
 				if (isExistFimlInTag(list.get(i).getIddocument())) {
 					count++;
-					System.out.println("CONDIÇÃO ->  " + isExistFimlInTag(list.get(i).getIddocument()));
-					System.out.println("FILME ->  " + list.get(i).getIddocument());
-
 					document.add(list.get(i).getIddocument());
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + list.get(i).getIddocument() + " "
-							+ DBFunctions.findNameOfFilm(list.get(i).getIddocument()) + " Rating: "
-							+ list.get(i).getRating());
+					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + list.get(i).getRating());
 
 				} else {
 					System.out.println("Não existe filme em TAGGING");
@@ -2237,7 +2192,6 @@ public class DBFunctions {
 				if (count == limit) {
 					break;
 				}
-
 			}
 
 			closeQuery(conn, ps);
@@ -2262,8 +2216,7 @@ public class DBFunctions {
 				while (rs != null && rs.next()) {
 
 					if (!isTagOfDocument(tags, rs.getInt(4))) {
-						System.out.println(
-								"DOCUMENT -> " + userModel.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
+						System.out.println("DOCUMENT -> " + userModel.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
 						tags.add(rs.getInt(4));
 					}
 				}
@@ -2312,7 +2265,6 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				if (!isTagOfDocument(tags, rs.getInt(4))) {
-					System.out.println("DOCUMENT -> " + filme + " RESULTADO findTagOfDocument -> " + rs.getInt(4));
 					tags.add(rs.getInt(4));
 				}
 			}
@@ -2368,7 +2320,6 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				if (!isTagOfDocument(tags, rs.getInt(4))) {
-					System.out.println("DOCUMENT -> " + filme + " RESULTADO findTagOfDocument -> " + rs.getInt(4));
 					tags.add(rs.getInt(4));
 				}
 			}
@@ -2394,7 +2345,6 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				if (!isTagOfDocument(tags, rs.getInt(4))) {
-					System.out.println("DOCUMENT -> " + filme + " RESULTADO findTagOfDocument -> " + rs.getInt(4));
 					tags.add(rs.getInt(4));
 				}
 			}
@@ -2430,7 +2380,6 @@ public class DBFunctions {
 
 			while (rs != null && rs.next()) {
 				document.add(findNameOfFilm(rs.getInt(1)));
-				System.out.println("FILMES RAKING-> " + findNameOfFilm(rs.getInt(1)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2455,7 +2404,6 @@ public class DBFunctions {
 
 			while (rs != null && rs.next()) {
 				document.add(findNameOfFilm(rs.getInt(2)));
-				System.out.println("FILMES QUE O USUARIO ESCOLHEU ->" + findNameOfFilm(rs.getInt(3)));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2477,7 +2425,6 @@ public class DBFunctions {
 
 			while (rs != null && rs.next()) {
 				document.add(rs.getInt(4));
-				System.out.println("Filmes não avaliados-> " + rs.getString(4));
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2519,8 +2466,7 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				tag.add(findTagById(rs.getInt(3)));
-				System.out.println("Document -> " + rs.getString(2) + " Tag -> " + rs.getString(3) + " Nome -> "
-						+ findTagById(rs.getInt(3)));
+				System.out.println("Document -> " + rs.getString(2) + " Tag -> " + rs.getString(3));
 
 			}
 			closeQuery(conn, ps);
@@ -5747,9 +5693,9 @@ public class DBFunctions {
 		PreparedStatement ps = null;
 		try {
 			try {
-				if (sim.equals(IConstants.LDSD)) {
+				if (sim.equals(IConstants.LDSD_LOD)) {
 					query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ";
-				} else if (sim.equals(IConstants.LDSD_LOD)) {
+				} else if (sim.equals(IConstants.LDSD_JACCARD)) {
 					query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ? and b.userid = ?)) ";
 				}
 				ps = conn.prepareStatement(query);
@@ -5759,7 +5705,7 @@ public class DBFunctions {
 				ps.setString(4, uri2);
 				ps.setString(5, uri1);
 				ps.setString(6, sim);
-				if (sim.equals(IConstants.LDSD_LOD)) {
+				if (sim.equals(IConstants.LDSD_JACCARD)) {
 					ps.setInt(7, Lodica.userId);
 				}
 

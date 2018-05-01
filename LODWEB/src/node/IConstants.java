@@ -23,6 +23,8 @@ public abstract class IConstants {
 	public final static String LDSD = "LDSD";
 	
 	public final static String LDSD_LOD = "LDSD_LOD";
+	
+	public final static String LDSD_JACCARD = "LDSD+JACCARD";
 
 	public final static String SEED_EVALUATION = "SEED_EVALUATION";
 	

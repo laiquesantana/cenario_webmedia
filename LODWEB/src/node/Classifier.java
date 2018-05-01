@@ -273,6 +273,7 @@ public class Classifier {
 	
 	public static Double calculateSemanticDistance(String uri1, String uri2, String similarityMethod,int userId) {
 		//Lodica.printNode(testNode);
+				
 		Double dist = null;
 		if (similarityMethod.equals(IConstants.LDSD)) {
 			//dist = null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(), testNode.getURI(),IConstants.LDSD);
@@ -288,9 +289,16 @@ public class Classifier {
 				dist = LDSD_LOD.LDSDweighted(uri1, uri2);
 				Lodica.getDatabaseConnection().insertSemanticDistance(uri1,uri2,similarityMethod,dist,userId);
 			}
+		}else if (similarityMethod.equals(IConstants.LDSD_JACCARD)) {
+			//dist = null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(), testNode.getURI(),IConstants.LDSD_LOD);
+			dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1,uri2,IConstants.LDSD_JACCARD);
+			if (dist==null) {
+				dist =  LDSD.LDSDweighted("http://dbpedia.org/resource/" + uri1, "http://dbpedia.org/resource/" + uri2);
+				Lodica.getDatabaseConnection().insertSemanticDistance("http://dbpedia.org/resource/" + uri1, "http://dbpedia.org/resource/" + uri2,similarityMethod,dist,userId);
+			}
 		}
 		return dist;
-	}	
+	}
 
 	/**
 	 * @param newLabel

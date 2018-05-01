@@ -45,7 +45,7 @@ public class SparqlWalk {
 
 	// Allow Sparql methods to consult/gather data form DB
 	//public static boolean USE_SPARQL_CACHE = true;
-	public static boolean USE_SPARQL_CACHE = false;
+	public static boolean USE_SPARQL_CACHE = true;
 	
 	public static void setService(String serviceURI){
 		if (serviceURI.equals(IConstants.TSS_FUSEKI)) {
