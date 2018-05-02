@@ -31,9 +31,9 @@ public class CBRecommender {
 	}
 
 	public static void recommend(int idUser) {
-		int limitItemUserModel = 5;
-		int limitMax = 5;
-		int limitMin = 5;
+		int limitItemUserModel = 1;
+		int limitMax = 2;
+		int limitMin = 2;
 		
 		DBFunctions dbFunctions = new DBFunctions();
 		List<Ratings> testSet = new ArrayList<Ratings>();

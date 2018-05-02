@@ -100,6 +100,18 @@ public class TaggingFactory {
 	public static String[] inputDados(String text) {
 		return text.split(" ");
 	}
+	
+	public static List<String> inputDadosCenario(String text) {
+		
+		 List<String> listTagCenario = new ArrayList<String>();
+		 String[] arrayCenario= text.split(",");
+		
+		for (int i = 0; i < arrayCenario.length; i++) {
+			 listTagCenario.add(arrayCenario[i]);	
+		}
+			
+		return listTagCenario;
+	}
 
 	/*
 	 * Concatena Tags da lista de Tags
@@ -377,7 +389,7 @@ public class TaggingFactory {
 				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP");
 			    TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "WUP+JACCARD");
 				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, "LDSD");
-				TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
+			//	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(userModel, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 				/* 
 				 * Exibe e retorna a lista com as simiaridades encontrada
@@ -387,7 +399,7 @@ public class TaggingFactory {
 			    List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
 				List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
 			    List<Integer> LDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD");
-			    List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
+			//    List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, IConstants.LDSD_JACCARD);
 				
 				/*
 				 * Calcula a Precisição, AP e MAP
@@ -398,7 +410,7 @@ public class TaggingFactory {
 	            calculeResultPrecisionAndMAP(userModel, WUPRankedList, testSetList, userId, "WUP");
 			    calculeResultPrecisionAndMAP(userModel, jaccardAndWUPRankedList, testSetList, userId, "WUP+JACCARD");
 			    calculeResultPrecisionAndMAP(userModel, LDSDRankedList, testSetList, userId, "LDSD");
-				calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
+			//	calculeResultPrecisionAndMAP(userModel, jaccardLDSDRankedList, testSetList, userId, IConstants.LDSD_JACCARD);
 				
 	}
 	

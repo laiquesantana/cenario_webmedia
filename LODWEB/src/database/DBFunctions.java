@@ -31,6 +31,7 @@ import com.drew.metadata.photoshop.PsdHeaderDescriptor;
 import com.sun.xml.bind.v2.runtime.reflect.opt.TransducedAccessor_field_Double;
 
 import cosinesimilarity.LuceneCosineSimilarity;
+import model.Cenario;
 import model.HitRate;
 import model.OnlineEvaluation;
 import model.Ratings;
@@ -1538,6 +1539,69 @@ public class DBFunctions {
 	}
 
 	// ----- Create by Patrick -----
+	
+	
+	public void insertOrUpdateCenario( int id_user, String tags_user,  String tags_testset) {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			try {
+				String query = "INSERT INTO `lod`.`cenario2` (`id_user`, `tags_user`,  `tags_testset`) VALUES (?, ?, ?)";
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, id_user);
+				ps.setString(2, tags_user);
+				ps.setString(3, tags_testset);
+				ps.execute();
+				ps.close();
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	
+	public List<Cenario> getCenario2(String name) {
+			
+		List<Cenario> listCenario2 = new ArrayList<Cenario>();
+
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT * from `lod`.`cenario2`";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, name);
+			ResultSet rs = ps.executeQuery();
+			while (rs != null && rs.next()) {
+				
+				Cenario cenario = new Cenario(rs.getInt(2), rs.getString(3), rs.getString(4));
+				listCenario2.add(cenario);
+			}
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return listCenario2;
+	}
+	
+	
 
 	public void insertOrUpdateTag(String tag) {
 		Connection conn = DBConnection.getConnection();
@@ -2213,7 +2277,7 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT(iduser) AS usuario FROM tagging";
+			String query = "SELECT DISTINCT(iduser) AS usuario FROM tagging LIMIT 100";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 
