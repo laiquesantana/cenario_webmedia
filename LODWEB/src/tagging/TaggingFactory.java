@@ -196,14 +196,54 @@ public class TaggingFactory {
 
 		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
 		
-		/* Salva o valor da soma das similaridades para utilizado no calculo JACCARD+LDSD e JACCARD+WUP */
-		DBFunctions.insertOrUpdateSumSemantic(UserId, uri2, resultSumSemantic, "LDSD");
-	
 		return resultSumSemantic / mapResultLDSDweighted.size();
 	}
+		
+	/*
+	 * Calcula a SOMA DAS similaridades LDSD
+	 */
+	public static double calculeSumSimilarityLDSD(List<Tag> listTag1, List<Tag> listTag2, int UserId, int uri2) {
+		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
+		int cont = 0;
+		double resultSumSemantic = 0;
+		DBFunctions dbFunctions = new DBFunctions();
 
-	
-	
+		for (Tag item1 : listTag1) {
+			for (Tag item2 : listTag2) {
+				cont = cont++;
+
+				Tag tag1 = dbFunctions.findTag(item1.getName());
+				Tag tag2 = dbFunctions.findTag(item2.getName());
+
+				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag1.getName());
+				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag2.getName());
+
+				double valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+
+				System.out.println(" LDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
+				
+				if (valueLDSD < 1.0) {
+					System.out.println("-------------------------------------------");
+					System.out.println("SALVOU: TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
+					System.out.println("-------------------------------------------");
+					mapResultLDSDweighted.put(nameTag1 + nameTag2, valueLDSD);
+					
+				}
+			}
+		}
+
+		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
+		System.out.println(mapResultLDSDweighted + " \n");
+		System.out.println("\n ================================== RESULTADOS SALVANDO. ====================================== ");
+
+		// Resultado da soma de todos as tags que existe similardade
+		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
+
+		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
+		
+		return resultSumSemantic;
+	}
+
 	/*
 	 * Escolhe qual calculo de similaridade irá calcular
 	 */
@@ -306,7 +346,7 @@ public class TaggingFactory {
 		Lodica.userId = userId;
 						
 				for (Cenario cenario : cenarios) {
-			    //	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
+			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
 			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "LDSD");
 					TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "COSINE");
 				  	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
@@ -334,8 +374,7 @@ public class TaggingFactory {
 					break;
 
 				}
-	
-	}
+		}
 	
 	/*
 	 * Calcula a AP(Average Precision)
@@ -404,5 +443,4 @@ public class TaggingFactory {
 		dbFunctions.saveResult(userId, userModel, testSetList, ap3, ap5, ap10, precsion, map, type);
 
 	}
-	
 }

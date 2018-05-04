@@ -32,7 +32,6 @@ public class ChooseCosine implements Similarity {
 				SemanticRaking semanticRaking1 = new SemanticRaking(1, c.getId_filme(), "COSINE", cosineSimilarity, userId); 
 				semanticRaking.add(semanticRaking1);
 			}
-
 		}
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {

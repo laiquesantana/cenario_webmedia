@@ -12,7 +12,6 @@ import wordnet.WordNetFactory;
 public class ChooseWUP implements Similarity {
 	
 	DBFunctions dbfunctions = new DBFunctions();
-
 	double similarityJaccard;
 	double calculeWup;
 	double union;
@@ -29,7 +28,7 @@ public class ChooseWUP implements Similarity {
 
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
-			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId, cenario.getId_filme());
+			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel));
 
 			if (calculeWup != calculeWup) calculeWup = 0;
 
@@ -40,13 +39,9 @@ public class ChooseWUP implements Similarity {
 		}
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {
-
 			if (semanticRaking2.getScore() != 0.0 || semanticRaking2.getScore() > 1.0) {
-
 				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(),  semanticRaking2.getScore(), userId);
-
 			}
 		}
 	}
-
 }

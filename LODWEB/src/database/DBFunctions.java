@@ -1573,47 +1573,6 @@ public class DBFunctions {
 		}
 
 	}
-	
-	
-	public static void insertOrUpdateSumSemantic(int idUser, int idFilm, double sumScore, String type) {
-		Connection conn = DBConnection.getConnection();
-		PreparedStatement ps = null;
-
-		try {
-			try {
-				String query = "INSERT INTO `lod`.`sum_semantic` (`isuser`, `id_film`, `sum_score`, `type`) VALUES (?, ?, ?, ?)";
-				ps = conn.prepareStatement(query);
-				ps.setInt(1, idUser);
-				ps.setInt(2, idFilm);
-				ps.setDouble(1, sumScore);
-				ps.setString(1, type);
-				ps.execute();
-				ps.close();
-				conn.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
-	
-	
 
 	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados, int limit) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
@@ -1794,7 +1753,6 @@ public class DBFunctions {
 				}
 			}
 		}
-
 	}
 	
 	public double findSemantic(String type, int id_user, int id_filme) {
@@ -1818,7 +1776,6 @@ public class DBFunctions {
 		}
 		return valor;
 	}
-
 
 	/*
 	 * Salva o Resultado dos calculos feito do usuário
@@ -1867,7 +1824,6 @@ public class DBFunctions {
 				}
 			}
 		}
-
 	}
 
 	public Tag findTag(String name) {
@@ -1957,14 +1913,15 @@ public class DBFunctions {
 	}
 
 	public boolean isFilmsExistSemantic(int uri1, int uri2, int userId, String sim) {
+		
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	try {
-			
+		
+		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT distinct b.score from `lod`.`semantic_raking` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
 			PreparedStatement ps = conn.prepareStatement(query);
@@ -2058,7 +2015,6 @@ public class DBFunctions {
 					listRelevants.add(relevants.get(index));
 					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: "+ relevants.get(index).getRating());
 				}
-
 			}
 
 			closeQuery(conn, ps);
@@ -2098,7 +2054,6 @@ public class DBFunctions {
 					listIrrelevants.add(irrelevants.get(index));
 					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(index).getRating());
 				}
-
 			}
 
 			closeQuery(conn, ps);

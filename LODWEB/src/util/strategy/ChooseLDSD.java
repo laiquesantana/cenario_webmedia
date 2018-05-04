@@ -36,10 +36,7 @@ public class ChooseLDSD implements Similarity {
 		for (SemanticRaking semantic : listSemanticRakingLDSD) {
 
 			if (semantic.getScore() != 0.0 || semantic.getScore() > 1.0) {
-
-				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(),
-						semantic.getScore(), userId);
-
+				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(),semantic.getScore(), userId);
 			}
 		}
 	}
