@@ -1573,6 +1573,47 @@ public class DBFunctions {
 		}
 
 	}
+	
+	
+	public void insertOrUpdateSumSemantic(int idUser, int idFilm, double sumScore, String type) {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			try {
+				String query = "INSERT INTO `lod`.`sum_semantic` (`isuser`, `id_film`, `sum_score`, `type`) VALUES (?, ?, ?, ?)";
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, idUser);
+				ps.setInt(2, idFilm);
+				ps.setDouble(1, sumScore);
+				ps.setString(1, type);
+				ps.execute();
+				ps.close();
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	
 
 	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados, int limit) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
@@ -1762,7 +1803,7 @@ public class DBFunctions {
 		
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT score from `lod`.`semantic_raking` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
+			String query = "SELECT sum_score from `lod`.`sum_semantic` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setString(1, type);
 			ps.setInt(2, id_user);

@@ -65,11 +65,11 @@ public class WordNetFactory {
 		}
 	}
 				
-	public static double calculeWUP(List<Tag> words1, List<Tag> words2) {
+	public static double calculeWUP(List<Tag> words1, List<Tag> words2,  int idUser, int uri2) {
 		DBFunctions dbFunctions = new DBFunctions();
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		double distance;
-		double resultSemantic = 0;
+		double resultSumSemantic = 0;
 			
 		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
 
@@ -98,18 +98,15 @@ public class WordNetFactory {
 				
 		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
 		System.out.println(mapResultLDSDweighted + " \n");
-		System.out.println("\n ================================== RESULTADOS ====================================== ");
+		System.out.println("\n ================================== RESULTADOS - SALVANDO. ====================================== ");
 		
-		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
-		resultSemantic = TaggingFactory.sumSemantic(mapResultLDSDweighted);
-			
-		System.out.println(" SOMA Similarity SEMÂNTICA -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted) + " | DIVISÃO PELO VALOR DA UNIÃO -> " + resultSemantic);
-		System.out.println(" RESULTADO DA SOMA DA WUP -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
-		System.out.println(" QUANTIDADE DE COMPARAÇÃO -> " + mapResultLDSDweighted.size());
-		System.out.println(" RESULTADO DA SOMA DIVIDIDA PELA QUANTIDADE DE COMPARAÇÃO -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
+		/* Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista */
+		resultSumSemantic = TaggingFactory.sumSemantic(mapResultLDSDweighted);
 		
+		/* Salva o valor da soma das similaridades para utilizado no calculo JACCARD+LDSD e JACCARD+WUP */
+		DBFunctions.insertOrUpdateSumSemantic(idUser, uri2, resultSumSemantic, "WUP");
 			
-		return resultSemantic / mapResultLDSDweighted.size();
+		return resultSumSemantic / mapResultLDSDweighted.size();
 	}
 
 	

@@ -29,7 +29,7 @@ public class ChooseWUP implements Similarity {
 
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
-			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel));
+			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId, cenario.getId_filme());
 
 			if (calculeWup != calculeWup) calculeWup = 0;
 

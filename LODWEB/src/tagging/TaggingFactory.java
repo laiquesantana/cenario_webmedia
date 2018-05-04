@@ -157,7 +157,7 @@ public class TaggingFactory {
 	/*
 	 * Calcula a similaridade LDSD
 	 */
-	public static double CalculeSumSemantic(List<Tag> listTag1, List<Tag> listTag2, int UserId) {
+	public static double calculeLDSD(List<Tag> listTag1, List<Tag> listTag2, int UserId, int uri2) {
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		int cont = 0;
 		double resultSumSemantic = 0;
@@ -197,34 +197,11 @@ public class TaggingFactory {
 
 		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
 		
-		return resultSumSemantic;
+		DBFunctions.insertOrUpdateSumSemantic(UserId, uri2, resultSumSemantic, "LDSD");
+	
+		return resultSumSemantic / mapResultLDSDweighted.size();
 	}
-	
-	
-	
-	/*
-	 * Calcula a similaridade LDSD
-	 */
-	public static double calculeLDSD(List<Tag> listTag1, List<Tag> listTag2, int UserId) {
-		int cont = 0;
-		DBFunctions dbFunctions = new DBFunctions();
-		double valueLDSD = 0;
 
-		for (Tag item1 : listTag1) {
-			for (Tag item2 : listTag2) {
-				cont = cont++;
-
-				Tag tag1 = dbFunctions.findTag(item1.getName());
-				Tag tag2 = dbFunctions.findTag(item2.getName());
-
-				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag1.getName());
-				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag2.getName());
-
-				valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
-			}
-		}
-		return valueLDSD;
-	}
 	
 	
 	/*
