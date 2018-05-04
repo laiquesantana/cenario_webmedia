@@ -129,7 +129,7 @@ public class LuceneCosineSimilarity {
 				for (int j = i; j < docVector.length; j++) {
 					if (i != j) {
 						cosineSimilarity = CosineSimilarity.CosineSimilarity(docVector[i], docVector[j]);
-						 System.out.println("VALOR DA SIMILARIDADE DO COSSENO -> "+ i + " and " + j + " = " + cosineSimilarity);
+						// System.out.println("VALOR DA SIMILARIDADE DO COSSENO -> "+ i + " and " + j + " = " + cosineSimilarity);
 					}
 
 				}

@@ -24,9 +24,16 @@ public abstract class IConstants {
 	
 	public final static String LDSD_LOD = "LDSD_LOD";
 	
+	
+	/*  Mestrado Patrick */
+	
 	public final static String LDSD_JACCARD = "LDSD+JACCARD";
+	
+	/* ------------------------------------------------------------------ */
 
 	public final static String SEED_EVALUATION = "SEED_EVALUATION";
+	
+	
 	
 
 	// Constants for passants caching

@@ -1,41 +1,56 @@
 package util.strategy;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import database.DBFunctions;
-import model.Tag;
+import model.Cenario;
+import model.SemanticRaking;
 import tagging.TaggingFactory;
 import wordnet.WordNetFactory;
 
 public class ChooseWUP implements Similarity {
 	
+	DBFunctions dbfunctions = new DBFunctions();
+
 	double similarityJaccard;
 	double calculeWup;
 	double union;
- 	double intersection;
- 	double ResultCalcule;
+	double intersection;
+	double ResultCalcule;
 
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId, int limitTag) {
-		DBFunctions dbFunctions = new DBFunctions();
-		
-		
-		List<Integer> tagsFilmesAvaliados = dbFunctions.findTagOfDocumentsLimitTag(filmes, limitTag);
-		List<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados);
-		
-		for (int j = 0; j < filmesNotRating.size(); j++) {
-			
-			List<Integer> tagsOfFilmsNotRating = dbFunctions.findTagOfDocumentWithLimitTag(filmesNotRating.get(j), limitTag);
-			List<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
-	
-			calculeWup = WordNetFactory.calculeWUP(nameOfTagsFilmsHasRating, nameOfTagsFilmsNotRating);
-						
-			if(calculeWup != calculeWup) calculeWup = 0;
-			
-			TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("WUP", similarityJaccard, calculeWup, calculeWup, filmesNotRating.get(j), userId);							
-				
+	public void choiceOfSimilarity(List<Cenario> cenarios, Cenario cenario, int userId, int limitTag) {
+
+		String[] arrayUserModel = cenario.getTags_user().split(",");
+
+		List<SemanticRaking> semanticRaking = new ArrayList<SemanticRaking>();
+
+		for (Cenario c : cenarios) {
+
+			String[] arrayUserTestModel = c.getTags_testset().split(",");
+
+			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel),
+					TaggingFactory.loadTagArray(arrayUserTestModel));
+
+			if (calculeWup != calculeWup)
+				calculeWup = 0;
+
+			if (calculeWup > 0.0) {
+				SemanticRaking semanticWup = new SemanticRaking(1, c.getId_filme(), "WUP", calculeWup, userId);
+				semanticRaking.add(semanticWup);
+			}
+
 		}
-   }
+
+		for (SemanticRaking semanticRaking2 : semanticRaking) {
+
+			if (semanticRaking2.getScore() != 0.0 || semanticRaking2.getScore() > 1.0) {
+
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(),  semanticRaking2.getScore(), userId);
+
+			}
+		}
+		System.out.println("SAlVANDO .......");
+	}
 
 }

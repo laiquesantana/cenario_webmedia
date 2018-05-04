@@ -20,13 +20,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
-
 import com.drew.metadata.photoshop.PsdHeaderDescriptor;
 import com.sun.xml.bind.v2.runtime.reflect.opt.TransducedAccessor_field_Double;
 
@@ -35,6 +33,7 @@ import model.Cenario;
 import model.HitRate;
 import model.OnlineEvaluation;
 import model.Ratings;
+import model.SemanticRaking;
 import model.Tag;
 import model.User;
 import node.Classifier;
@@ -1539,69 +1538,6 @@ public class DBFunctions {
 	}
 
 	// ----- Create by Patrick -----
-	
-	
-	public void insertOrUpdateCenario( int id_user, String tags_user,  String tags_testset) {
-		Connection conn = DBConnection.getConnection();
-		PreparedStatement ps = null;
-
-		try {
-			try {
-				String query = "INSERT INTO `lod`.`cenario2` (`id_user`, `tags_user`,  `tags_testset`) VALUES (?, ?, ?)";
-				ps = conn.prepareStatement(query);
-				ps.setInt(1, id_user);
-				ps.setString(2, tags_user);
-				ps.setString(3, tags_testset);
-				ps.execute();
-				ps.close();
-				conn.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
-	
-	
-	public List<Cenario> getCenario2(String name) {
-			
-		List<Cenario> listCenario2 = new ArrayList<Cenario>();
-
-		try {
-			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * from `lod`.`cenario2`";
-			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setString(1, name);
-			ResultSet rs = ps.executeQuery();
-			while (rs != null && rs.next()) {
-				
-				Cenario cenario = new Cenario(rs.getInt(2), rs.getString(3), rs.getString(4));
-				listCenario2.add(cenario);
-			}
-			closeQuery(conn, ps);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return listCenario2;
-	}
-	
-	
 
 	public void insertOrUpdateTag(String tag) {
 		Connection conn = DBConnection.getConnection();
@@ -1638,11 +1574,13 @@ public class DBFunctions {
 
 	}
 
-	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados) {
+	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados, int limit) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
-
-		for (int i = 0; i < tagsFilmesAvaliados.size(); i++) {
-			nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(tagsFilmesAvaliados.get(i))));
+		List<Integer> tagsDosFilmes = DBFunctions.findTagOfDocuments(tagsFilmesAvaliados,limit);
+		for (int i = 0; i < tagsDosFilmes.size(); i++) {
+			if (tagsDosFilmes.get(i) != null){
+				nameOfTagsFilmsHasRating.add(new Tag(i, DBFunctions.getNameOfTag(tagsDosFilmes.get(i))));
+			}
 		}
 		return nameOfTagsFilmsHasRating;
 	}
@@ -1650,7 +1588,7 @@ public class DBFunctions {
 	public ArrayList<Tag> getNameOfTagsOfFilm(int tagsFilmesAvaliado) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
-		nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(tagsFilmesAvaliado)));
+		nameOfTagsFilmsHasRating.add(new Tag(tagsFilmesAvaliado, DBFunctions.getNameOfTag(tagsFilmesAvaliado)));
 	
 		return nameOfTagsFilmsHasRating;
 	}
@@ -1774,6 +1712,12 @@ public class DBFunctions {
 	}
 
 	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, int iduser) {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
@@ -1811,16 +1755,39 @@ public class DBFunctions {
 		}
 
 	}
+	
+	public double findSemantic(String type, int id_user, int id_filme) {
+		
+		double valor = 0;
+		
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT score from `lod`.`semantic_raking` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, type);
+			ps.setInt(2, id_user);
+			ps.setInt(3, id_filme);
+			ResultSet rs = ps.executeQuery();
+			while (rs != null && rs.next()) {
+				valor = rs.getDouble(1);
+			}
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return valor;
+	}
+
 
 	/*
 	 * Salva o Resultado dos calculos feito do usuário
 	 */
-	public void saveResult(int idUser, List<Integer> userModelList, List<Integer> testSetList, double ap3, double ap5,
+	public void saveResult(int idUser, String userModelList, List<Integer> testSetList, double ap3, double ap5,
 			double ap10, double precision, double map, String type) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-		String userModel = TaggingFactory.listNameFilmString(userModelList);
+		//String userModel = TaggingFactory.listNameFilmString(userModelList);
 		String testSet = TaggingFactory.listNameFilmString(testSetList);
 
 		try {
@@ -1828,7 +1795,7 @@ public class DBFunctions {
 				String query = "INSERT INTO `lod`.`result` (`iduser`, `usermodel`, `testset`, `p3`, `p5`, `p10`, `precision`, `map`, `type`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				ps = conn.prepareStatement(query);
 				ps.setInt(1, idUser);
-				ps.setString(2, userModel);
+				ps.setString(2, userModelList);
 				ps.setString(3, testSet);
 				ps.setDouble(4, ap3);
 				ps.setDouble(5, ap5);
@@ -1949,8 +1916,14 @@ public class DBFunctions {
 	}
 
 	public boolean isFilmsExistSemantic(int uri1, int uri2, int userId, String sim) {
-
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	try {
+			
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT distinct b.score from `lod`.`semantic_raking` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
 			PreparedStatement ps = conn.prepareStatement(query);
@@ -2207,10 +2180,9 @@ public class DBFunctions {
 		List<Integer> document = new ArrayList<Integer>();
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * FROM lod.rating WHERE iduser = ? AND rating = 5 LIMIT ?";
+			String query = "SELECT * FROM lod.rating WHERE iduser = ? AND rating = 5 ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, idUser);
-			ps.setInt(2, limit);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
@@ -2223,10 +2195,11 @@ public class DBFunctions {
 			for (int i = 0; i < list.size(); i++) {
 
 				if (isExistFimlInTag(list.get(i).getIddocument())) {
+					if (findTagById(list.get(i).getIddocument()) != null){
 					count++;
 					document.add(list.get(i).getIddocument());
 					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + list.get(i).getRating());
-
+					}
 				} else {
 					System.out.println("Não existe filme em TAGGING");
 				}
@@ -2243,16 +2216,17 @@ public class DBFunctions {
 		return document;
 	}
 
-	public static List<Integer> findTagOfDocuments(List<Integer> userModel) {
+	public static List<Integer> findTagOfDocuments(List<Integer> userModel, int limit) {
 
 		List<Integer> tags = new ArrayList<Integer>();
 
 		for (int i = 0; i < userModel.size(); i++) {
 			try {
 				Connection conn = DBConnection.getConnection();
-				String query = "SELECT * FROM lod.tagging WHERE iddocument = ? LIMIT 5";
+				String query = "SELECT * FROM lod.tagging WHERE iddocument = ? LIMIT ?";
 				PreparedStatement ps = conn.prepareStatement(query);
 				ps.setInt(1, userModel.get(i));
+				ps.setInt(2, limit);
 				ResultSet rs = ps.executeQuery();
 
 				while (rs != null && rs.next()) {
@@ -2271,13 +2245,14 @@ public class DBFunctions {
 		return tags;
 	}
 
+
 	public static List<Integer> findUsers() {
 
 		List<Integer> users = new ArrayList<Integer>();
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT(iduser) AS usuario FROM tagging LIMIT 100";
+			String query = "SELECT DISTINCT(iduser) AS usuario FROM tagging";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 
@@ -2347,6 +2322,41 @@ public class DBFunctions {
 		return tags;
 	}
 
+	
+	public void insertOrUpdateCenario( int id_user, String tags_user) {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			try {
+				String query = "INSERT INTO `lod`.`cenario1` (`id_user`, `tags_user`) VALUES (?, ?)";
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, id_user);
+				ps.setString(2, tags_user);
+				ps.execute();
+				ps.close();
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	public List<Integer> findTagOfDocumentWithLimitTag(int filme, int limit) {
 
 		List<Integer> tags = new ArrayList<Integer>();
@@ -2371,6 +2381,30 @@ public class DBFunctions {
 		}
 
 		return tags;
+	}
+	
+	public static List<Cenario> selectCenario(int id_user) {
+		Cenario cenario = null;
+
+		List<Cenario> list = new ArrayList<Cenario>();
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT * FROM cenario3 WHERE id_user = ? ";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, id_user);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs != null && rs.next()) {
+				cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),rs.getInt(5));
+				list.add(cenario);
+				
+			}
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return list;
 	}
 
 	public List<Integer> findTagOfDocumentNotRating(int filme) {

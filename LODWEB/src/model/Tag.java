@@ -3,18 +3,18 @@ package model;
 public class Tag {
 	private int id;
 	private String name;
-
-	public Tag() { }
 	
 	public Tag(String name) {
+		super();
 		this.name = name;
 	}
-	
-	public Tag(int id, String name) {
-		this.name = name;
+
+	public Tag(int id ,String name) {
+		super();
 		this.id = id;
+		this.name = name;
 	}
-		
+
 	public int getId() {
 		return id;
 	}
@@ -22,7 +22,7 @@ public class Tag {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -30,4 +30,6 @@ public class Tag {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+
 }

@@ -4,29 +4,45 @@ import java.util.ArrayList;
 import java.util.List;
 import cosinesimilarity.LuceneCosineSimilarity;
 import database.DBFunctions;
-import model.Tag;
+import model.Cenario;
+import model.SemanticRaking;
 import tagging.TaggingFactory;
 
-
 public class ChooseCosine implements Similarity {
-	
+
 	@Override
-	public void choiceOfSimilarity(List<Integer> filmes, List<Integer> filmesNotRating, int userId, int limitTag) {
-		DBFunctions dbFunctions = new DBFunctions();
+	public void choiceOfSimilarity(List<Cenario> cenarios, Cenario cenario, int userId, int limitTag) {
 		double cosineSimilarity;
-			
-		List<Integer> tagsFilmesAvaliados = DBFunctions.findTagOfDocuments(filmes);
-		ArrayList<Tag> nameOfTagsFilmsHasRating = dbFunctions.getNameOfTagsOfFilms(tagsFilmesAvaliados); // List
+		DBFunctions dbfunctions = new DBFunctions();
+		String[] arrayUserModel = cenario.getTags_user().split(",");
 
-		for (int j = 0; j < filmesNotRating.size(); j++) {
-			List<Integer> tagsOfFilmsNotRating = new ArrayList<Integer>();
+		List<SemanticRaking> semanticRaking = new ArrayList<SemanticRaking>();
 
-			tagsOfFilmsNotRating = dbFunctions.findTagOfDocument(filmesNotRating.get(j));
-			ArrayList<Tag> nameOfTagsFilmsNotRating = dbFunctions.getNameOfTagsOfFilms(tagsOfFilmsNotRating);
+		for (Cenario c : cenarios) {
 
-			cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.concatenaTagText(nameOfTagsFilmsHasRating), TaggingFactory.concatenaTagText(nameOfTagsFilmsNotRating));
-			
-			TaggingFactory.saveResultSimilarityOfUserModelWithTestSet("COSINE", cosineSimilarity, 0, cosineSimilarity, filmesNotRating.get(j), userId);		
+			String[] arrayUserTestModel = c.getTags_testset().split(",");
+
+			cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.retornaString(arrayUserModel),
+					TaggingFactory.retornaString(arrayUserTestModel));
+
+			System.out.println("\n UserModel : " + TaggingFactory.retornaString(arrayUserModel) + "\n TestModel: "
+					+ TaggingFactory.retornaString(arrayUserTestModel) + "\n Tiveram similaridade: "
+					+ cosineSimilarity);
+
+			if (cosineSimilarity > 0.0) {
+				SemanticRaking semanticRaking1 = new SemanticRaking(1, c.getId_filme(), "COSINE", cosineSimilarity, userId); 
+				semanticRaking.add(semanticRaking1);
+			}
+
+		}
+
+		for (SemanticRaking semanticRaking2 : semanticRaking) {
+			if (semanticRaking2.getScore() != 0.0  || semanticRaking2.getScore() > 1.0)  {
+				
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(), semanticRaking2.getScore(), userId);
+				
+			}
+
 		}
 	}
 }
