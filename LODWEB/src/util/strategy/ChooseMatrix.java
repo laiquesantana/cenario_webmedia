@@ -73,11 +73,11 @@ public class ChooseMatrix implements Similarity {
 		}
 
 		/* Salva Similaridade JAccard */
-		for (SemanticRaking semanticRaking2 : semanticRaking) {
+		for (SemanticRaking semanticJaccard : semanticRaking) {
 
-			if (semanticRaking2.getScore() != 0.0  || semanticRaking2.getScore() > 1.0)  {
+			if (semanticJaccard.getScore() != 0.0  || semanticJaccard.getScore() > 1.0)  {
 				
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(), semanticRaking2.getScore(), userId);
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticJaccard.getUri2(), semanticJaccard.getType(), semanticJaccard.getScore(), userId);
 				
 			}
 
@@ -91,8 +91,6 @@ public class ChooseMatrix implements Similarity {
 				dbfunctions.insertOrUpdateSemanticRaking(1, semanticLdsd.getUri2(), semanticLdsd.getType(), semanticLdsd.getScore(), userId);
 				
 			}
-			
-			
 		}
 
 		/* Salva Similaridade Jaccard + WUP */
@@ -102,7 +100,6 @@ public class ChooseMatrix implements Similarity {
 				dbfunctions.insertOrUpdateSemanticRaking(1, semanticWup.getUri2(), semanticWup.getType(), semanticWup.getScore(), userId);
 				
 			}
-
 		}
 		System.out.println("SAlVANDO .......");
 	} 

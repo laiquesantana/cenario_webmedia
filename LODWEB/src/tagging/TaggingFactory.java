@@ -91,7 +91,9 @@ public class TaggingFactory {
 	}
 	
 	
-	
+	/*
+	 * Converte Lista de inteiros em uma string
+	 */
 	public static String listNameTag(List<Integer> filmes) {
 		String text = "";
 		
@@ -102,7 +104,9 @@ public class TaggingFactory {
 		return text;
 	}
 
-
+	/*
+	 * Converte uma string em um array
+	 */
 	public static String[] inputDados(String text) {
 		return text.split(" ");
 	}
@@ -150,6 +154,9 @@ public class TaggingFactory {
 		return list.size();
 	}
 
+	/*
+	 * Calcula a similaridade LDSD
+	 */
 	public static double calculeLDSD(List<Tag> listTag1, List<Tag> listTag2, int UserId) {
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		int cont = 0;
@@ -168,7 +175,7 @@ public class TaggingFactory {
 
 				double valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
 
-				System.out.println(" valueLDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
+				System.out.println(" LDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
 				
 				if (valueLDSD < 1.0) {
 					System.out.println("-------------------------------------------");
@@ -189,8 +196,8 @@ public class TaggingFactory {
 		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
 
 		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
-	
-		return resultSumSemantic / mapResultLDSDweighted.size();
+		
+		return resultSumSemantic;
 	}
 	
 	
@@ -249,6 +256,9 @@ public class TaggingFactory {
 		}
 	}
 	
+	/*
+	 * Ordena o testSet que vai ser utilizado pelo algoritimo
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<Ratings> orderTestSetByRating(List<Ratings> testSet) {
 		
@@ -285,23 +295,15 @@ public class TaggingFactory {
 	}
 	
 	/*
-	 * Salva o resultado do calculo da similaridade entre UserModel e TestSet
-	 */
-	
-	/*
 	 * Calcula a similaridade e salva no banco de dados e devolve uma recomendações de filmes
 	 */
 	public static void createRecomedationSystem(List<Cenario> cenarios, int userId, List<Integer> listTestuser) {
 		
 		DBFunctions dbFunctions = new DBFunctions();
 		Lodica.userId = userId;
-				/*
-				 * Cria a lista com ID dos filmes
-				 */
-	
-		
+						
 				for (Cenario cenario : cenarios) {
-			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
+			    //	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
 			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "LDSD");
 					TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "COSINE");
 				  	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
@@ -332,6 +334,9 @@ public class TaggingFactory {
 	
 	}
 	
+	/*
+	 * Calcula a AP(Average Precision)
+	 */
 	public static double calculeAP(List<Integer> rankedList, List<Integer> testList, String similarity, int limit) {
 
 		List<Integer> listRankedByLimit = new ArrayList<Integer>(); 
@@ -352,6 +357,9 @@ public class TaggingFactory {
 		return AP;
 	}
 
+	/*
+	 * Calcula Mean Average Precision
+	 */
 	public static double calculeMAP(double ap3, double ap5, double ap10, String nameSimilarity) {
 
 		double map = (ap3 + ap5 + ap10) / 3;
@@ -362,6 +370,9 @@ public class TaggingFactory {
 
 	}
 
+	/*
+	 * Converte uma lista de Ratings para uma lista de Integer
+	 */
 	public static List<Integer> createTestSetList(List<Ratings> testSetList) {
 
 		List<Integer> filmRatingList = new ArrayList<Integer>();
@@ -372,6 +383,9 @@ public class TaggingFactory {
 		return filmRatingList;
 	}
 	
+	/*
+	 * Calcula o Precision e o MAP e salva em  resultados
+	 */
 	public static void calculeResultPrecisionAndMAP(String userModel, List<Integer> rankedList, List<Integer> testSetList, int userId, String type) {
 		DBFunctions dbFunctions = new DBFunctions();
 				

@@ -1,16 +1,15 @@
 package model;
 
-import tagging.Document;
-import tagging.User;
+import tagging.Usersss;
 
 public class Tagging {
 
 	int id;
 	Document document;
-	User user;
+	Usersss user;
 	Tag tag;
 
-	public Tagging(Document document, User user, Tag tag) {
+	public Tagging(Document document, Usersss user, Tag tag) {
 		this.document = document;
 		this.user = user;
 		this.tag = tag;
@@ -24,11 +23,11 @@ public class Tagging {
 		this.document = document;
 	}
 
-	public User getUser() {
+	public Usersss getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(Usersss user) {
 		this.user = user;
 	}
 

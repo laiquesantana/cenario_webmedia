@@ -64,7 +64,7 @@ public class Cenario3 {
 						textoTestModel = textoTestModel + DBFunctions.findTagById(valor) + ",";
 					}
 				}
-				dbFunctions.insertOrUpdateCenario(listUsers[i], textouserModel, textoTestModel,testSetList.get(j) );
+				dbFunctions.insertOrUpdateCenario(listUsers[i], textouserModel);
 			}
 			
 			System.out.println(textoTestModel);

@@ -20,32 +20,27 @@ public class ChooseLDSD implements Similarity {
 
 		DBFunctions dbfunctions = new DBFunctions();
 		String[] arrayUserModel = cenario.getTags_user().split(",");
-		List<SemanticRaking> semanticRaking = new ArrayList<SemanticRaking>();
+		List<SemanticRaking> listSemanticRakingLDSD = new ArrayList<SemanticRaking>();
 
 		for (Cenario c : cenarios) {
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
-			calculeLDSD = TaggingFactory.calculeLDSD(TaggingFactory.loadTagArray(arrayUserModel),
-					TaggingFactory.loadTagArray(arrayUserTestModel), userId);
-
+			calculeLDSD = TaggingFactory.calculeLDSD(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId);
+		
 			if (calculeLDSD > 0.0) {
-				SemanticRaking semanticRaking1 = new SemanticRaking(1, c.getId_filme(), "LDSD", calculeLDSD, userId);
-				semanticRaking.add(semanticRaking1);
+				SemanticRaking semanticRakingLDSD = new SemanticRaking(1, c.getId_filme(), "LDSD", calculeLDSD, userId);
+				listSemanticRakingLDSD.add(semanticRakingLDSD);
 			}
-
 		}
-
 	
-		for (SemanticRaking semanticRaking2 : semanticRaking) {
+		for (SemanticRaking semantic : listSemanticRakingLDSD) {
 
-			if (semanticRaking2.getScore() != 0.0 || semanticRaking2.getScore() > 1.0) {
+			if (semantic.getScore() != 0.0 || semantic.getScore() > 1.0) {
 
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(),
-						semanticRaking2.getScore(), userId);
+				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(),
+						semantic.getScore(), userId);
 
 			}
-
 		}
-		System.out.println("SAlVANDO .......");
 	}
 }

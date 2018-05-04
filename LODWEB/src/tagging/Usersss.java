@@ -1,11 +1,11 @@
 package tagging;
 
-public class User {
+public class Usersss {
 
 	int id;
 	String first;
 
-	public User(int id, String first) {
+	public Usersss(int id, String first) {
 		super();
 		this.id = id;
 		this.first = first;
