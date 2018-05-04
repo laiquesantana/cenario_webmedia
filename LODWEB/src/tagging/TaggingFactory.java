@@ -189,14 +189,14 @@ public class TaggingFactory {
 
 		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
 		System.out.println(mapResultLDSDweighted + " \n");
-		System.out.println("\n ================================== RESULTADOS ====================================== ");
+		System.out.println("\n ================================== RESULTADOS SALVANDO. ====================================== ");
 
-		// Resultado da soma de todos as tags que existe similardade dividida pela
-		// quantidade de itens da lista
+		// Resultado da soma de todos as tags que existe similardade
 		resultSumSemantic = sumSemantic(mapResultLDSDweighted);
 
 		if (resultSumSemantic != resultSumSemantic) resultSumSemantic = 0;
 		
+		/* Salva o valor da soma das similaridades para utilizado no calculo JACCARD+LDSD e JACCARD+WUP */
 		DBFunctions.insertOrUpdateSumSemantic(UserId, uri2, resultSumSemantic, "LDSD");
 	
 		return resultSumSemantic / mapResultLDSDweighted.size();

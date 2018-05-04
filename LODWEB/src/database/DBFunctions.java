@@ -1575,7 +1575,7 @@ public class DBFunctions {
 	}
 	
 	
-	public void insertOrUpdateSumSemantic(int idUser, int idFilm, double sumScore, String type) {
+	public static void insertOrUpdateSumSemantic(int idUser, int idFilm, double sumScore, String type) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 

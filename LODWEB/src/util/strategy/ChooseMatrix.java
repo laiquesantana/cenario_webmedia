@@ -5,7 +5,6 @@ import java.util.List;
 import database.DBFunctions;
 import model.Cenario;
 import model.SemanticRaking;
-import model.Tag;
 import similarity.Jaccard;
 import tagging.TaggingFactory;
 
@@ -34,7 +33,8 @@ public class ChooseMatrix implements Similarity {
 
 			/* Calcula Similaridade Jaccard */
 			if (similarityJaccard > 0.0) {
-				SemanticRaking semanticRakingJaccard = new SemanticRaking(1, c.getId_filme(), "JACCARD", similarityJaccard, userId);
+				SemanticRaking semanticRakingJaccard = new SemanticRaking(1, c.getId_filme(), "JACCARD", similarityJaccard,
+						userId);
 				semanticRaking.add(semanticRakingJaccard);
 			}
 
@@ -49,11 +49,20 @@ public class ChooseMatrix implements Similarity {
 					e.printStackTrace();
 				}
 
-			
 			/* Calcula Similaridade LDSD + JACCARD */
-			resultCalculeLDSD = TaggingFactory.CalculeSumSemantic(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId);	
-		
+			calculeSemanticLDSD = dbfunctions.findSemantic("LDSD", userId, c.getId_filme());
 			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			resultCalculeLDSD = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticLDSD);
+	
 			if (resultCalculeLDSD > 0.0) {
 				SemanticRaking semanticRakingLdsdJaccard1 = new SemanticRaking(1, c.getId_filme(), "LDSD+JACCARD", resultCalculeLDSD, userId);
 				semanticRakingLdsdJaccard.add(semanticRakingLdsdJaccard1);
