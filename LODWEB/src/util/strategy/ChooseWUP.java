@@ -29,17 +29,14 @@ public class ChooseWUP implements Similarity {
 
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
-			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel),
-					TaggingFactory.loadTagArray(arrayUserTestModel));
+			calculeWup = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel));
 
-			if (calculeWup != calculeWup)
-				calculeWup = 0;
+			if (calculeWup != calculeWup) calculeWup = 0;
 
 			if (calculeWup > 0.0) {
 				SemanticRaking semanticWup = new SemanticRaking(1, c.getId_filme(), "WUP", calculeWup, userId);
 				semanticRaking.add(semanticWup);
 			}
-
 		}
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {
@@ -50,7 +47,6 @@ public class ChooseWUP implements Similarity {
 
 			}
 		}
-		System.out.println("SAlVANDO .......");
 	}
 
 }

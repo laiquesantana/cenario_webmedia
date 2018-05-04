@@ -28,7 +28,7 @@ public class ChooseLDSD implements Similarity {
 			calculeLDSD = TaggingFactory.calculeLDSD(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId);
 		
 			if (calculeLDSD > 0.0) {
-				SemanticRaking semanticRakingLDSD = new SemanticRaking(1, c.getId_filme(), "LDSD", calculeLDSD, userId);
+				SemanticRaking semanticRakingLDSD = new SemanticRaking(1, c.getId_filme(), "LDSD", calculeLDSD, userId); 
 				listSemanticRakingLDSD.add(semanticRakingLDSD);
 			}
 		}

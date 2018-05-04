@@ -38,6 +38,4 @@ public class CBRecommender {
 			TaggingFactory.createRecomedationSystem(TestSets, listUsers[i], listTestSet);
 		}
 	}
-
-
 }

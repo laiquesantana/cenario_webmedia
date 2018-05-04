@@ -22,8 +22,7 @@ public class ChooseCosine implements Similarity {
 
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
-			cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.retornaString(arrayUserModel),
-					TaggingFactory.retornaString(arrayUserTestModel));
+			cosineSimilarity = LuceneCosineSimilarity.getCosineSimilarity(TaggingFactory.retornaString(arrayUserModel), TaggingFactory.retornaString(arrayUserTestModel));
 
 			System.out.println("\n UserModel : " + TaggingFactory.retornaString(arrayUserModel) + "\n TestModel: "
 					+ TaggingFactory.retornaString(arrayUserTestModel) + "\n Tiveram similaridade: "
@@ -38,11 +37,8 @@ public class ChooseCosine implements Similarity {
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {
 			if (semanticRaking2.getScore() != 0.0  || semanticRaking2.getScore() > 1.0)  {
-				
 				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(), semanticRaking2.getScore(), userId);
-				
 			}
-
 		}
 	}
 }
