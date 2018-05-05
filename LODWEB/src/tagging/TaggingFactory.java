@@ -162,6 +162,7 @@ public class TaggingFactory {
 		int cont = 0;
 		double resultSumSemantic = 0;
 		DBFunctions dbFunctions = new DBFunctions();
+		double valueLDSD;
 
 		for (Tag item1 : userModel) {
 			for (Tag item2 : testeSet) {
@@ -170,7 +171,17 @@ public class TaggingFactory {
 				String nameTag1 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(item1.getName());
 				String nameTag2 = StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(item2.getName());
 
-				double valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+				valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+				
+				
+				try {
+					valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+				} catch(Exception e) {
+					valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
+				}
+				
+				
+				
 
 				System.out.println(" LDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
 				
