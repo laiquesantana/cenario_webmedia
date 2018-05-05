@@ -173,16 +173,6 @@ public class TaggingFactory {
 
 				valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
 				
-				
-				try {
-					valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
-				} catch(Exception e) {
-					valueLDSD = Classifier.calculateSemanticDistance(nameTag1, nameTag2, IConstants.LDSD_JACCARD, UserId);
-				}
-				
-				
-				
-
 				System.out.println(" LDSD TAG 1 -> " + nameTag1 + " TAG 2 -> " + nameTag2 + " = " + valueLDSD);
 				
 				if (valueLDSD < 1.0 && valueLDSD > 0.0) {

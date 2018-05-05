@@ -276,29 +276,45 @@ public class Classifier {
 		String uri2 = "http://dbpedia.org/resource/" + uri_2;
 				
 		Double dist = null;
-		if (similarityMethod.equals(IConstants.LDSD)) {
-			//dist = null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(), testNode.getURI(),IConstants.LDSD);
-			dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1, uri2,IConstants.LDSD);
-			if (dist==null) {
-				dist = LDSD.LDSDweighted(uri1, uri2);
-				Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2,similarityMethod,dist,userId);
+		
+		try {
+
+			if (similarityMethod.equals(IConstants.LDSD)) {
+				// dist =
+				// null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(),
+				// testNode.getURI(),IConstants.LDSD);
+				dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1, uri2, IConstants.LDSD);
+				if (dist == null) {
+					dist = LDSD.LDSDweighted(uri1, uri2);
+					Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2, similarityMethod, dist, userId);
+				}
+			} else if (similarityMethod.equals(IConstants.LDSD_LOD)) {
+				// dist =
+				// null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(),
+				// testNode.getURI(),IConstants.LDSD_LOD);
+				dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1, uri2, IConstants.LDSD_LOD);
+				if (dist == null) {
+					dist = LDSD_LOD.LDSDweighted(uri1, uri2);
+					Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2, similarityMethod, dist, userId);
+				}
+			} else if (similarityMethod.equals(IConstants.LDSD_JACCARD)) {
+				// dist =
+				// null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(),
+				// testNode.getURI(),IConstants.LDSD_LOD);
+				dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1, uri2, IConstants.LDSD_JACCARD);
+				if (dist == null) {
+					System.out.println("não existe a similaridade no banco entao busca na web ");
+					dist = LDSD.LDSDweighted(uri1, uri2);
+					Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2, similarityMethod, dist, userId);
+				}
 			}
-		}else if (similarityMethod.equals(IConstants.LDSD_LOD)) {
-			//dist = null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(), testNode.getURI(),IConstants.LDSD_LOD);
-			dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1,uri2,IConstants.LDSD_LOD);
-			if (dist==null) {
-				dist = LDSD_LOD.LDSDweighted(uri1, uri2);
-				Lodica.getDatabaseConnection().insertSemanticDistance(uri1,uri2,similarityMethod,dist,userId);
-			}
-		}else if (similarityMethod.equals(IConstants.LDSD_JACCARD)) {
-			//dist = null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(), testNode.getURI(),IConstants.LDSD_LOD);
-			dist = Lodica.getDatabaseConnection().getSimilarityByMethod(uri1, uri2,IConstants.LDSD_JACCARD);
-			if (dist==null) {
-				System.out.println("não existe a similaridade no banco entao busca na web ");
-				dist =  LDSD.LDSDweighted(uri1, uri2);
-				Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2, similarityMethod,dist,userId);
-			}
+
+		} catch (Exception e) {
+			calculateSemanticDistance(uri1, uri2, IConstants.LDSD_JACCARD, userId);
 		}
+		
+		
+		
 		return dist;
 	}
 
