@@ -36,7 +36,7 @@ public class ChooseCosine implements Similarity {
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {
 			if (semanticRaking2.getScore() != 0.0  || semanticRaking2.getScore() > 1.0)  {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(), semanticRaking2.getScore(), userId);
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(), semanticRaking2.getScore(),0, userId);
 			}
 		}
 	}

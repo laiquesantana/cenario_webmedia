@@ -5,14 +5,25 @@ public class SemanticRaking {
 	private int uri1;
 	private int uri2;
 	private double score;
+	private double sumsemantic;
 	private int userid;
 	private String type;
 
-	public SemanticRaking(int uri1, int uri2, String type, double score, int userid) {
+	public SemanticRaking(int uri1, int uri2, String type, double score,  int userid) {
 		super();
 		this.uri1 = uri1;
 		this.uri2 = uri2;
 		this.score = score;
+		this.userid = userid;
+		this.type = type;
+
+	}
+	public SemanticRaking(int uri1, int uri2, String type, double score, double sumsemantic, int userid) {
+		super();
+		this.uri1 = uri1;
+		this.uri2 = uri2;
+		this.score = score;
+		this.sumsemantic = sumsemantic;
 		this.userid = userid;
 		this.type = type;
 
@@ -56,6 +67,14 @@ public class SemanticRaking {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public double getSumsemantic() {
+		return sumsemantic;
+	}
+
+	public void setSumsemantic(double sumsemantic) {
+		this.sumsemantic = sumsemantic;
 	}
 
 	

@@ -65,60 +65,8 @@ public class WordNetFactory {
 		}
 	}
 	
-		
-	public static double calculeSumTagSemanticWUP(List<Tag> words1, List<Tag> words2) {
-		DBFunctions dbFunctions = new DBFunctions();
-		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
-		double distance;
-		double resultSemantic = 0;
-
-		
-		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
-
-		for (Tag word1 : words1) {
-			for (Tag word2 : words2) {
-		
-				try { Thread.sleep (200); } catch (InterruptedException ex) {}
-				
-				Tag tag1 = dbFunctions.findTag(word1.getName());
-				Tag tag2 = dbFunctions.findTag(word2.getName());
-					
-				distance = valueDistance(tag1.getName(), tag2.getName());
-				
-				System.out.println("WUP: " + word1.getName() + " -  " + word2.getName() + " = " + distance);
-
-				if (distance != 1.0 && distance != 0.0 && distance < 1 && tag1.getId() != tag2.getId() || dbFunctions.isTagSimResult(tag1, tag2, "WUP") != 0) {
-					mapResultLDSDweighted.put(tag1.getName() + tag2.getName(), (distance));
-					System.out.println("-------------------------------------------------");
-					System.out.println("VALOR DA SIMILARIDADE -> " + distance);
-					System.out.println("ITEM 1 -> " + tag1.getId() + " ITEM 2 -> " + tag2.getId() );
-					System.out.println("-------------------------------------------------");
-					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), distance, "WUP");
-				}
-			}
-		}
-				
-		System.out.println("\n ====================== ARRAYLIST DE ELEMENTOS QUE SERÃO SOMADOS ==================== ");
-		System.out.println(mapResultLDSDweighted + " \n");
-		System.out.println("\n ================================== RESULTADOS ====================================== ");
-		
-		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
-		resultSemantic = TaggingFactory.sumSemantic(mapResultLDSDweighted);
-			
-		System.out.println(" SOMA Similarity SEMÂNTICA -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted) + " | DIVISÃO PELO VALOR DA UNIÃO -> " + resultSemantic);
-		System.out.println(" RESULTADO DA SOMA DA WUP -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
-		System.out.println(" QUANTIDADE DE COMPARAÇÃO -> " + mapResultLDSDweighted.size());
-		System.out.println(" RESULTADO DA SOMA DIVIDIDA PELA QUANTIDADE DE COMPARAÇÃO -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
-		
-		if(resultSemantic > 1) {
-			 resultSemantic = 1;
-		}
-			
-		return resultSemantic;
-	}
-
 	
-	public static double calculeWUP(List<Tag> words1, List<Tag> words2) {
+	public static double[] calculeWUP(List<Tag> userModel, List<Tag> testeSet) {
 		DBFunctions dbFunctions = new DBFunctions();
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		double distance;
@@ -128,25 +76,23 @@ public class WordNetFactory {
 		
 		System.out.println("\n ====================== WORDNET - WUP ==================== \n");
 
-		for (Tag word1 : words1) {
-			for (Tag word2 : words2) {
+		for (Tag word1 : userModel) {
+			for (Tag word2 : testeSet) {
 		
 				try { Thread.sleep (200); } catch (InterruptedException ex) {}
-				
-				Tag tag1 = dbFunctions.findTag(word1.getName());
-				Tag tag2 = dbFunctions.findTag(word2.getName());
+			
 					
-				distance = valueDistance(tag1.getName(), tag2.getName());
+				distance = valueDistance(word1.getName(), word2.getName());
 				
 				System.out.println("WUP: " + word1.getName() + " -  " + word2.getName() + " = " + distance);
 
-				if (distance != 1.0 && distance != 0.0 && distance < 1 && tag1.getId() != tag2.getId() || dbFunctions.isTagSimResult(tag1, tag2, "WUP") != 0) {
-					mapResultLDSDweighted.put(tag1.getName() + tag2.getName(), (distance));
+				if (distance != 1.0 && distance != 0.0 && distance < 1 ) {
+					mapResultLDSDweighted.put(word1.getName() + word2.getName(), (distance));
 					System.out.println("-------------------------------------------------");
 					System.out.println("VALOR DA SIMILARIDADE -> " + distance);
-					System.out.println("ITEM 1 -> " + tag1.getId() + " ITEM 2 -> " + tag2.getId() );
+					System.out.println("ITEM 1 -> " + word1.getName() + " ITEM 2 -> " + word2.getName() );
 					System.out.println("-------------------------------------------------");
-					dbFunctions.insertOrUpdateTagSim(tag1.getId(), tag2.getId(), distance, "WUP");
+				//	dbFunctions.insertOrUpdateTagSim(word1.getId(), word2.getId(), distance, "WUP");
 				}
 			}
 		}
@@ -157,14 +103,12 @@ public class WordNetFactory {
 		
 		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
 		resultSemantic = TaggingFactory.sumSemantic(mapResultLDSDweighted);
-			
-		System.out.println(" SOMA Similarity SEMÂNTICA -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted) + " | DIVISÃO PELO VALOR DA UNIÃO -> " + resultSemantic);
-		System.out.println(" RESULTADO DA SOMA DA WUP -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
-		System.out.println(" QUANTIDADE DE COMPARAÇÃO -> " + mapResultLDSDweighted.size());
-		System.out.println(" RESULTADO DA SOMA DIVIDIDA PELA QUANTIDADE DE COMPARAÇÃO -> " + TaggingFactory.sumSemantic(mapResultLDSDweighted));
 		
-			
-		return resultSemantic / mapResultLDSDweighted.size();
+		if (resultSemantic != resultSemantic) resultSemantic = 0;
+		
+		double score= resultSemantic / mapResultLDSDweighted.size();
+		return new double[] { resultSemantic, score };	
+		
 	}
 
 	

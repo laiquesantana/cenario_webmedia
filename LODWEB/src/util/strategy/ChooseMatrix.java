@@ -11,12 +11,12 @@ import wordnet.WordNetFactory;
 
 public class ChooseMatrix implements Similarity {
 	double similarityJaccard;
-	double calculeSemanticLDSD;
+	double calculeSumSemanticLDSD;
 	double union;
 	double intersection;
 	double resultCalculeLDSD;
 	double resultCalculeWup;
-	double calculeSemanticWup;
+	double calculeSumSemanticWup;
 
 	@Override
 	public void choiceOfSimilarity(List<Cenario> cenarios, Cenario cenario, int userId, int limitTag) {
@@ -34,8 +34,7 @@ public class ChooseMatrix implements Similarity {
 			similarityJaccard = Jaccard.similarityJaccard(TaggingFactory.loadTagArray(arrayUserModel),TaggingFactory.loadTagArray(arrayUserTestModel));
 
 			if (similarityJaccard > 0.0) {
-				SemanticRaking semanticRakingJaccard = new SemanticRaking(1, c.getId_filme(), "JACCARD", similarityJaccard,
-						userId);
+				SemanticRaking semanticRakingJaccard = new SemanticRaking(1, c.getId_filme(), "JACCARD", similarityJaccard,userId);
 				semanticRaking.add(semanticRakingJaccard);
 			}
 
@@ -50,9 +49,9 @@ public class ChooseMatrix implements Similarity {
 				}
 
 			/* Calcula Similaridade LDSD + JACCARD */
-			calculeSemanticLDSD = TaggingFactory.calculeSumSimilarityLDSD(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel), userId, cenario.getId_filme());
+			calculeSumSemanticLDSD = dbfunctions.findSemantic("LDSD",userId, cenario.getId_filme());
 		
-			resultCalculeLDSD = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticLDSD);
+			resultCalculeLDSD = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSumSemanticLDSD);
 	
 			if (resultCalculeLDSD > 0.0) {
 				SemanticRaking semanticRakingLdsdJaccard1 = new SemanticRaking(1, c.getId_filme(), "LDSD+JACCARD", resultCalculeLDSD, userId);
@@ -60,9 +59,9 @@ public class ChooseMatrix implements Similarity {
 			}
 		
 			/*  Calcula Similaridade WUP + JACCARD */
-			calculeSemanticWup = WordNetFactory.calculeSumTagSemanticWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel));
+			calculeSumSemanticWup = dbfunctions.findSemantic("WUP",userId, cenario.getId_filme());
 						
-			resultCalculeWup = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSemanticWup);
+			resultCalculeWup = TaggingFactory.calculeSimilarityAndJaccard(union, intersection, calculeSumSemanticWup);
 
 			if (resultCalculeWup > 0.0) {
 				SemanticRaking semanticWup = new SemanticRaking(1, c.getId_filme(), "WUP+JACCARD", resultCalculeWup, userId);
@@ -73,22 +72,22 @@ public class ChooseMatrix implements Similarity {
 		/* Salva Similaridade JAccard */
 		for (SemanticRaking semanticJaccard : semanticRaking) {
 
-			if (semanticJaccard.getScore() != 0.0  || semanticJaccard.getScore() > 1.0)  {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticJaccard.getUri2(), semanticJaccard.getType(), semanticJaccard.getScore(), userId);
+			if (semanticJaccard.getScore() != 0.0  || semanticJaccard.getScore() < 1.0)  {
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticJaccard.getUri2(), semanticJaccard.getType(), semanticJaccard.getScore(),0, userId);
 			}
 		} 
 
 		/* Salva Similaridade Jaccard + LDSD */
 		for (SemanticRaking semanticLdsd : semanticRakingLdsdJaccard) {
-			if (semanticLdsd.getScore() != 0.0  || semanticLdsd.getScore() > 1.0)  {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticLdsd.getUri2(), semanticLdsd.getType(), semanticLdsd.getScore(), userId);
+			if (semanticLdsd.getScore() != 0.0  || semanticLdsd.getScore() < 1.0)  {
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticLdsd.getUri2(), semanticLdsd.getType(), semanticLdsd.getScore(),0, userId);
 			}
 		}
 
 		/* Salva Similaridade Jaccard + WUP */
 		for (SemanticRaking semanticWup : semanticRakingWupJaccard) {
-			if (semanticWup.getScore() != 0.0  || semanticWup.getScore() > 1.0)  {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semanticWup.getUri2(), semanticWup.getType(), semanticWup.getScore(), userId);
+			if (semanticWup.getScore() != 0.0  || semanticWup.getScore() < 1.0)  {
+				dbfunctions.insertOrUpdateSemanticRaking(1, semanticWup.getUri2(), semanticWup.getType(), semanticWup.getScore(),0, userId);
 			}
 		}
 	} 

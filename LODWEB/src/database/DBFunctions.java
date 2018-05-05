@@ -1711,7 +1711,7 @@ public class DBFunctions {
 
 	}
 
-	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, int iduser) {
+	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, double sumsemantic,int iduser) {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -1723,13 +1723,14 @@ public class DBFunctions {
 
 		try {
 			try {
-				String query = "REPLACE INTO `semantic_raking` ( `uri1`, `uri2`, `sim`, `score`, `userid`) VALUES (?,?,?,?,?)";
+				String query = "INSERT INTO `lod`.`semantic_raking` (`uri1`, `uri2`, `sim`, `score`, `sumsemantic`, `userid`) VALUES (?,?,?,?,?,?)";
 				ps = conn.prepareStatement(query);
 				ps.setInt(1, idTag1);
 				ps.setInt(2, idTag2);
 				ps.setString(3, sim);
 				ps.setDouble(4, score);
-				ps.setInt(5, iduser);
+				ps.setDouble(5, sumsemantic);
+				ps.setInt(6, iduser);
 				ps.execute();
 				ps.close();
 				conn.close();
@@ -1761,7 +1762,7 @@ public class DBFunctions {
 		
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT sum_score from `lod`.`sum_semantic` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
+			String query = "SELECT sumsemantic from `lod`.`semantic_raking` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setString(1, type);
 			ps.setInt(2, id_user);
