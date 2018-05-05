@@ -2386,7 +2386,7 @@ public class DBFunctions {
 		List<Cenario> list = new ArrayList<Cenario>();
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * FROM cenario3 WHERE id_user = ? ";
+			String query = "SELECT * FROM cenario2 WHERE id_user = ? ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, id_user);
 			ResultSet rs = ps.executeQuery();
