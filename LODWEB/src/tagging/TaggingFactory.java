@@ -278,16 +278,14 @@ public class TaggingFactory {
 	 */
 	public static double calculeSimilarityAndJaccard(double  union, double  intersection, double similarity) {
 
-		double sumSimilarityAndIntersertion = similarity + intersection;
 		double resultCalcule = 0;
 									
-				resultCalcule = sumSimilarityAndIntersertion / union;		
+				resultCalcule = (similarity + intersection) / union;		
 					
 				System.out.println(" ************ DENTRO DO MÉTODO ************");
 				System.out.println("VALOR DA UNIÃO -> " + union);
 				System.out.println("VALOR DA INTERSEÇÃO -> " + intersection);
 				System.out.println("VALOR DA SOMA DA SIMILARIDADE -> " + similarity);
-				System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO -> " + sumSimilarityAndIntersertion);
 				System.out.println("VALOR DA SOMA DA SIMILARIDADE COM INTERSEÇÃO DIVIDIDO PELA UNIÃO-> " + resultCalcule);
 		
 			return resultCalcule;
@@ -327,7 +325,7 @@ public class TaggingFactory {
 				  	calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listTestuser, userId, "LDSD");
 				    calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listTestuser, userId, "LDSD+JACCARD"); 
 					
-					break;
+					return;
 
 				}
 		}

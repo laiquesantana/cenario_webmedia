@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jena.atlas.web.HttpException;
+
 import similarity.LDSD;
 import similarity.LDSD_LOD;
 import similarity.NodeSim;
@@ -277,8 +279,6 @@ public class Classifier {
 				
 		Double dist = null;
 		
-		try {
-
 			if (similarityMethod.equals(IConstants.LDSD)) {
 				// dist =
 				// null;//Lodica.getDatabaseConnection().getSimilarityByMethod(trainingNode.getURI(),
@@ -305,15 +305,16 @@ public class Classifier {
 				if (dist == null) {
 					System.out.println("não existe a similaridade no banco entao busca na web ");
 					dist = LDSD.LDSDweighted(uri1, uri2);
+					try {
 					Lodica.getDatabaseConnection().insertSemanticDistance(uri1, uri2, similarityMethod, dist, userId);
+					}catch(HttpException o) {
+						calculateSemanticDistance(uri1, uri2,IConstants.LDSD_JACCARD,userId);
+					} catch(NullPointerException e) {
+						calculateSemanticDistance(uri1, uri2,IConstants.LDSD_JACCARD,userId);
+					}
 				}
 			}
-
-		} catch (Exception e) {
-			calculateSemanticDistance(uri1, uri2, IConstants.LDSD_JACCARD, userId);
-		}
-		
-		
+	
 		
 		return dist;
 	}
