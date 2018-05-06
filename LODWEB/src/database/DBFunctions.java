@@ -1954,7 +1954,7 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT * FROM semantic_raking WHERE userid = ? AND sim = ? AND score != 0 AND score < 1 ORDER BY score DESC ";
+			String query = "SELECT DISTINCT * FROM semantic_raking WHERE userid = ? AND sim = ?";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, userid);
 			ps.setString(2, type);
@@ -1962,11 +1962,11 @@ public class DBFunctions {
 			int cont = 1;
 
 			System.out.println(" \n ---------- RAKING DOS FILME UTILIZANDO UTILIZANDO " + type + "--------------- \n");
-			System.out.println(" CLASSIFICAÇÃO |  USUARIO |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
+			System.out.println(" CLASSIFICAÇÃO |  USUARIO  |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
 			while (rs != null && rs.next()) {
 
 				System.out.println(
-						"       " + cont + "           " + rs.getInt(7) + "         " + findNameOfFilm(rs.getInt(2))
+						"       " + cont + "           " + rs.getInt(6) + "         " + findNameOfFilm(rs.getInt(2))
 								+ "                " + rs.getString(3) + "    " + rs.getDouble(4));
 				System.out.println(" ---------------------------------------------------------------------------");
 
