@@ -1966,7 +1966,7 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				System.out.println(
-						"       " + cont + "           " + rs.getInt(5) + "         " + findNameOfFilm(rs.getInt(2))
+						"       " + cont + "           " + rs.getInt(7) + "         " + findNameOfFilm(rs.getInt(2))
 								+ "                " + rs.getString(3) + "    " + rs.getDouble(4));
 				System.out.println(" ---------------------------------------------------------------------------");
 

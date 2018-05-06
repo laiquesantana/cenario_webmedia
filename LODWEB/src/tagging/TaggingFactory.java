@@ -325,7 +325,7 @@ public class TaggingFactory {
 				  	calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listTestuser, userId, "LDSD");
 				    calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listTestuser, userId, "LDSD+JACCARD"); 
 					
-					return;
+					break;
 
 				}
 		}
