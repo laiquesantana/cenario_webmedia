@@ -1954,15 +1954,15 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT DISTINCT * FROM semantic_raking WHERE userid = ? AND sim = ?";
+			String query = "SELECT * FROM semantic_raking WHERE userid = 96 AND sim = 'WUP' AND score > 0 AND score < 1 ORDER BY score DESC ";
 			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, userid);
-			ps.setString(2, type);
+			//ps.setInt(1, userid);
+			//ps.setString(2, type);
 			ResultSet rs = ps.executeQuery();
 			int cont = 1;
 
 			System.out.println(" \n ---------- RAKING DOS FILME UTILIZANDO UTILIZANDO " + type + "--------------- \n");
-			System.out.println(" CLASSIFICAÇÃO |  USUARIO  |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
+			System.out.println(" CLASSIFICAÇÃO |  USUARIO |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
 			while (rs != null && rs.next()) {
 
 				System.out.println(

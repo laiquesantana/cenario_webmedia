@@ -300,29 +300,29 @@ public class TaggingFactory {
 		Lodica.userId = userId;
 						
 				for (Cenario cenario : cenarios) {
-			    	//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "LDSD");
-			    	//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
-					//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "COSINE");
-				  	//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
+			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "LDSD");
+			    	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "WUP");
+					TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "COSINE");
+				  	TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario,  userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
 				  	
 					/* 
 					 * Exibe e retorna a lista com as simiaridades encontrada
 					 */
-				     //List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
-				  	 //List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
-				  	 //List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
-				    // List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
-				  	// List<Integer> LDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD");
+				     List<Integer> cosineRankedList = dbFunctions.resultRecommendation(userId, "COSINE");
+				  	 List<Integer> jaccardRankedList = dbFunctions.resultRecommendation(userId, "JACCARD");
+				  	 List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
+				     List<Integer> jaccardAndWUPRankedList = dbFunctions.resultRecommendation(userId, "WUP+JACCARD");
+				  	 List<Integer> LDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD");
 				  	 List<Integer> jaccardLDSDRankedList = dbFunctions.resultRecommendation(userId, "LDSD+JACCARD");
 									
 					/*
 					 *  Calcula a Precisição, AP e MAP
 					 */
-					//calculeResultPrecisionAndMAP(cenario.getTags_user(), cosineRankedList, listTestuser, userId, "COSINE");
-				   // calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardRankedList, listTestuser, userId, "JACCARD");
-				  	//calculeResultPrecisionAndMAP(cenario.getTags_user(), WUPRankedList, listTestuser, userId, "WUP");
-				  	//calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardAndWUPRankedList, listTestuser, userId, "WUP+JACCARD");
-				  	//calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listTestuser, userId, "LDSD");
+					calculeResultPrecisionAndMAP(cenario.getTags_user(), cosineRankedList, listTestuser, userId, "COSINE");
+				    calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardRankedList, listTestuser, userId, "JACCARD");
+				  	calculeResultPrecisionAndMAP(cenario.getTags_user(), WUPRankedList, listTestuser, userId, "WUP");
+				  	calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardAndWUPRankedList, listTestuser, userId, "WUP+JACCARD");
+				  	calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listTestuser, userId, "LDSD");
 				    calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listTestuser, userId, "LDSD+JACCARD"); 
 					
 					break;
