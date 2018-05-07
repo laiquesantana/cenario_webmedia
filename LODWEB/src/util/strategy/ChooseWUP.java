@@ -38,7 +38,7 @@ public class ChooseWUP implements Similarity {
 		}
 
 		for (SemanticRaking semanticRaking2 : semanticRaking) {
-			if (semanticRaking2.getScore() != 0.0 || semanticRaking2.getScore() > 1.0) {
+			if (semanticRaking2.getScore() != 0.0 || semanticRaking2.getScore() < 1.0) {
 				dbfunctions.insertOrUpdateSemanticRaking(1, semanticRaking2.getUri2(), semanticRaking2.getType(),
 						semanticRaking2.getScore(), semanticRaking2.getSumsemantic(), userId);
 			}
